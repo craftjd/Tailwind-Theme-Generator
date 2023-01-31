@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Color Scheme Generator</title>
+    <script defer src="dist/app.js"></script>
+    <link rel="stylesheet" href="dist/app.css">
+</head>
+<body class="bg-gray-200 p-8">
+
+<div id="app">
+    <h1 class="text-3xl text-center mb-8">Color Scheme Generator</h1>
+
+    <div class="mb-8">
+        <label>
+            Brand Color
+            <input type="text"
+                v-model="colorInputValue"
+                :placeholder="brand.hex()"
+                class="border px-2 py-1 ml-2"
+            >
+        </label>
+
+        <label class="ml-4">
+            Percent Mix
+            <input type="number"
+                v-model="percentInputValue"
+                min="0.1"
+                max="1"
+                step="0.1"
+                class="border px-2 py-1 ml-2 w-20"
+            >
+        </label>
+
+        <label class="ml-4">
+            Grays Percent Mix
+            <input type="number"
+                v-model="grayPercentInputValue"
+                min="0.1"
+                max="1"
+                step="0.01"
+                class="border px-2 py-1 ml-2 w-20"
+            >
+        </label>
+
+        <label class="ml-4">
+            CTA Hue Shift
+            <input type="number"
+                v-model="ctaHueInputValue"
+                min="0"
+                max="255"
+                class="border px-2 py-1 ml-2 w-20"
+            >
+        </label>
+    </div>
+
+    <!-- TODO: add randomize button -->
+
+    <section class="mb-8">
+        <div class="flex flex-wrap">
+            <div v-for="color in colors" :key="color.name" class="p-2 w-1/3">
+                <span v-text="color.name"></span>
+                <div
+                    :style="{ backgroundColor: color.value.hex() }"
+                    class="h-24 mt-1 border"
+                ></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-8">
+        <span>Grays</span>
+        <div class="flex flex-wrap mt-2">
+            <div
+                v-for="gray in grays"
+                :key="gray.name"
+                :style="{ backgroundColor: gray.value.hex() }"
+                class="h-16 w-16 border"
+            ></div>
+        </div>
+    </section>
+
+    <!-- TODO: add tint/shade variations on swatches -->
+    <!-- TODO: add SASS/SCSS output tabs -->
+    <!-- TODO: add dark/light mode toggle -->
+    <!-- TODO: add website preview -->
+
+    <section class="mb-8">
+        <h2 class="text-lg mb-2">Tailwind Output</h2>
+        <pre class="bg-white p-4 text-sm border overflow-x-auto">
+<span v-for="(gray, id) in grays" :key="id">'{{ id }}': '{{ gray.value.hex() }}',
+</span>
+
+<span v-for="(color, id) in colors" :key="id">'{{ id }}': '{{ color.value.hex() }}',
+</span></pre>
+    </section>
+</div>
+
+</body>
+</html>

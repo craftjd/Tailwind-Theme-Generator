@@ -1,10 +1,107 @@
 import Vue from 'vue';
+import chroma from 'chroma-js';
 
 new Vue({
     el: '#app',
 
     data: {
-        // TODO: add color input fields
-        // TODO: add color generation logic
+        colorInputValue: '',
+        percentInputValue: '0.4',
+        grayPercentInputValue: '0.2',
+        ctaHueInputValue: '150',
     },
+
+    computed: {
+        brand() {
+            // Default brand when input is empty — TODO: add randomize button
+            return this.colorInputValue
+                ? chroma(this.colorInputValue)
+                : chroma('#6366f1');
+        },
+
+        percent() {
+            return this.percentInputValue;
+        },
+
+        grayPercent() {
+            return this.grayPercentInputValue;
+        },
+
+        ctaHueShift() {
+            return this.ctaHueInputValue;
+        },
+
+        colors() {
+            return {
+                brand: {
+                    name: 'Brand',
+                    value: this.brand,
+                },
+                cta: {
+                    name: 'CTA',
+                    value: this.brand.set('hsl.h', +this.ctaHueShift),
+                },
+                info: {
+                    name: 'Info',
+                    value: chroma.mix('#3df', this.brand, this.percent, 'lab'),
+                },
+                warning: {
+                    name: 'Warning',
+                    value: chroma.mix('#fd0', this.brand, this.percent, 'lab'),
+                },
+                success: {
+                    name: 'Success',
+                    value: chroma.mix('#3e4', this.brand, this.percent, 'lab'),
+                },
+                danger: {
+                    name: 'Danger',
+                    value: chroma.mix('#f34', this.brand, this.percent, 'lab'),
+                },
+            };
+        },
+
+        grays() {
+            return {
+                white: {
+                    name: 'White',
+                    value: chroma('#fff'),
+                },
+                'gray-lightest': {
+                    name: 'gray Lightest',
+                    value: chroma.mix('rgb(253, 253, 253)', this.brand, this.grayPercent, 'lab'),
+                },
+                'gray-lighter': {
+                    name: 'gray Lighter',
+                    value: chroma.mix('rgb(225, 225, 225)', this.brand, this.grayPercent, 'lab'),
+                },
+                'gray-light': {
+                    name: 'gray Light',
+                    value: chroma.mix('rgb(194, 194, 194)', this.brand, this.grayPercent, 'lab'),
+                },
+                gray: {
+                    name: 'gray',
+                    value: chroma.mix('rgb(163, 163, 163)', this.brand, this.grayPercent, 'lab'),
+                },
+                'gray-dark': {
+                    name: 'gray Dark',
+                    value: chroma.mix('rgb(133, 133, 133)', this.brand, this.grayPercent, 'lab'),
+                },
+                'gray-darker': {
+                    name: 'gray Darker',
+                    value: chroma.mix('rgb(96, 96, 96)', this.brand, this.grayPercent, 'lab'),
+                },
+                'gray-darkest': {
+                    name: 'gray Darkest',
+                    value: chroma.mix('rgb(60, 60, 60)', this.brand, this.grayPercent, 'lab'),
+                },
+                black: {
+                    name: 'Black',
+                    value: chroma.mix('rgb(30, 30, 30)', this.brand, this.grayPercent, 'lab'),
+                },
+            };
+        },
+    },
+
+    // TODO: add tint/shade methods
+    // TODO: add randomize button handler
 });
