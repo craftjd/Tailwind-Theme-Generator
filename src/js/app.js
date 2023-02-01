@@ -13,10 +13,9 @@ new Vue({
 
     computed: {
         brand() {
-            // Default brand when input is empty — TODO: add randomize button
-            return this.colorInputValue
-                ? chroma(this.colorInputValue)
-                : chroma('#6366f1');
+            return !this.colorInputValue
+                ? this.getRandomColor()
+                : chroma(this.colorInputValue);
         },
 
         percent() {
@@ -102,6 +101,11 @@ new Vue({
         },
     },
 
+    methods: {
+        getRandomColor() {
+            return chroma.random();
+        },
+    },
+
     // TODO: add tint/shade methods
-    // TODO: add randomize button handler
 });

@@ -17,7 +17,7 @@
             Brand Color
             <input type="text"
                 v-model="colorInputValue"
-                :placeholder="brand.hex()"
+                :placeholder="brand"
                 class="border px-2 py-1 ml-2"
             >
         </label>
@@ -53,9 +53,15 @@
                 class="border px-2 py-1 ml-2 w-20"
             >
         </label>
-    </div>
 
-    <!-- TODO: add randomize button -->
+        <button type="button"
+            class="border px-3 py-1 ml-4 bg-gray-100"
+            title="Randomize"
+            @click="colorInputValue = getRandomColor()"
+        >
+            Randomize
+        </button>
+    </div>
 
     <section class="mb-8">
         <div class="flex flex-wrap">

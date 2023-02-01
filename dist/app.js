@@ -17281,8 +17281,7 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
   },
   computed: {
     brand: function brand() {
-      // Default brand when input is empty — TODO: add randomize button
-      return this.colorInputValue ? Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.colorInputValue) : Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])('#6366f1');
+      return !this.colorInputValue ? this.getRandomColor() : Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.colorInputValue);
     },
     percent: function percent() {
       return this.percentInputValue;
@@ -17361,10 +17360,14 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
         }
       };
     }
+  },
+  methods: {
+    getRandomColor: function getRandomColor() {
+      return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].random();
+    }
   }
 
   // TODO: add tint/shade methods
-  // TODO: add randomize button handler
 });
 
 /***/ }),
