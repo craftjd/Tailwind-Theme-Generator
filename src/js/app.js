@@ -9,6 +9,11 @@ new Vue({
         percentInputValue: '0.4',
         grayPercentInputValue: '0.2',
         ctaHueInputValue: '150',
+        // Hardcoded shift values — TODO: add user inputs to control these
+        tintOneShift: 0.1,
+        tintTwoShift: 0.3,
+        shadeOneShift: 0.55,
+        shadeTwoShift: 0.3,
     },
 
     computed: {
@@ -105,7 +110,13 @@ new Vue({
         getRandomColor() {
             return chroma.random();
         },
-    },
 
-    // TODO: add tint/shade methods
+        tint(hex, factor) {
+            return chroma.mix('#fff', hex, factor, 'lab');
+        },
+
+        shade(hex, factor) {
+            return chroma.mix('#000', hex, factor, 'lab');
+        },
+    },
 });

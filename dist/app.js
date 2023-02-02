@@ -17277,7 +17277,12 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     colorInputValue: '',
     percentInputValue: '0.4',
     grayPercentInputValue: '0.2',
-    ctaHueInputValue: '150'
+    ctaHueInputValue: '150',
+    // Hardcoded shift values — TODO: add user inputs to control these
+    tintOneShift: 0.1,
+    tintTwoShift: 0.3,
+    shadeOneShift: 0.55,
+    shadeTwoShift: 0.3
   },
   computed: {
     brand: function brand() {
@@ -17364,10 +17369,14 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
   methods: {
     getRandomColor: function getRandomColor() {
       return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].random();
+    },
+    tint: function tint(hex, factor) {
+      return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].mix('#fff', hex, factor, 'lab');
+    },
+    shade: function shade(hex, factor) {
+      return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].mix('#000', hex, factor, 'lab');
     }
   }
-
-  // TODO: add tint/shade methods
 });
 
 /***/ }),
