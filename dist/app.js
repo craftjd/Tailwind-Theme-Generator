@@ -17278,11 +17278,10 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     percentInputValue: '0.4',
     grayPercentInputValue: '0.2',
     ctaHueInputValue: '150',
-    // Hardcoded shift values — TODO: add user inputs to control these
-    tintOneShift: 0.1,
-    tintTwoShift: 0.3,
-    shadeOneShift: 0.55,
-    shadeTwoShift: 0.3
+    tintOneInputValue: '.1',
+    tintTwoInputValue: '.3',
+    shadeOneInputValue: '.55',
+    shadeTwoInputValue: '.3'
   },
   computed: {
     brand: function brand() {
@@ -17296,6 +17295,18 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     },
     ctaHueShift: function ctaHueShift() {
       return this.ctaHueInputValue;
+    },
+    tintOneShift: function tintOneShift() {
+      return this.tintOneInputValue;
+    },
+    tintTwoShift: function tintTwoShift() {
+      return this.tintTwoInputValue;
+    },
+    shadeOneShift: function shadeOneShift() {
+      return this.shadeOneInputValue;
+    },
+    shadeTwoShift: function shadeTwoShift() {
+      return this.shadeTwoInputValue;
     },
     colors: function colors() {
       return {
