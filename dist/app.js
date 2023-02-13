@@ -17281,7 +17281,8 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     tintOneInputValue: '.1',
     tintTwoInputValue: '.3',
     shadeOneInputValue: '.55',
-    shadeTwoInputValue: '.3'
+    shadeTwoInputValue: '.3',
+    isDarkMode: false
   },
   computed: {
     brand: function brand() {
@@ -17381,11 +17382,17 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     getRandomColor: function getRandomColor() {
       return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].random();
     },
+    randomizeTheme: function randomizeTheme() {
+      this.colorInputValue = this.getRandomColor().hex();
+    },
     tint: function tint(hex, factor) {
       return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].mix('#fff', hex, factor, 'lab');
     },
     shade: function shade(hex, factor) {
       return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].mix('#000', hex, factor, 'lab');
+    },
+    toggleDarkMode: function toggleDarkMode() {
+      this.isDarkMode = !this.isDarkMode;
     }
   }
 });

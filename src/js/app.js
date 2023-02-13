@@ -13,6 +13,7 @@ new Vue({
         tintTwoInputValue: '.3',
         shadeOneInputValue: '.55',
         shadeTwoInputValue: '.3',
+        isDarkMode: false,
     },
 
     computed: {
@@ -126,12 +127,20 @@ new Vue({
             return chroma.random();
         },
 
+        randomizeTheme() {
+            this.colorInputValue = this.getRandomColor().hex();
+        },
+
         tint(hex, factor) {
             return chroma.mix('#fff', hex, factor, 'lab');
         },
 
         shade(hex, factor) {
             return chroma.mix('#000', hex, factor, 'lab');
+        },
+
+        toggleDarkMode() {
+            this.isDarkMode = !this.isDarkMode;
         },
     },
 });

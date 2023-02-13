@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="bg-gray-200 font-mono text-gray-800">
+<html lang="en" class="font-mono">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,134 +8,153 @@
     <script defer src="dist/app.js"></script>
     <link rel="stylesheet" href="dist/app.css">
 </head>
-<body>
+<body class="m-0">
 
-<div id="app">
-    <h1 class="leading-tight my-12 px-4 text-4xl text-center">
-        Color Scheme Generator
-    </h1>
+<div id="app"
+    :class="isDarkMode ? 'bg-gray-900 text-gray-100' : 'bg-gray-200 text-gray-800'"
+>
+    <div class="flex items-start justify-between px-4 pt-4">
+        <h1 class="leading-tight text-3xl sm:text-4xl">
+            Color Scheme Generator
+        </h1>
 
-    <label class="block max-w-lg mx-auto mb-12 px-4">
-        <div class="flex">
-            <div class="flex flex-col">
-                <span class="text-lg">Brand Color</span>
+        <button type="button"
+            class="px-3 py-2 rounded flex-shrink-0"
+            :class="isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-white hover:bg-gray-100'"
+            title="Toggle dark/light mode"
+            @click="toggleDarkMode"
+        >
+            <i :class="isDarkMode ? 'fas fa-sun' : 'fas fa-moon'"></i>
+        </button>
+    </div>
 
+    <div class="text-center px-4 py-6">
+        <button type="button"
+            class="inline-flex items-center px-8 py-3 text-lg font-bold rounded shadow"
+            :class="isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-white hover:bg-gray-100 text-gray-800'"
+            @click="randomizeTheme"
+        >
+            <i class="fas fa-random mr-2"></i>
+            Randomize Theme
+        </button>
+    </div>
+
+    <div class="container mx-auto mb-8 px-4 max-w-6xl">
+        <div class="flex flex-wrap -mx-2">
+            <div class="w-full sm:w-1/2 lg:w-1/4 px-2 mb-4 flex flex-col">
+                <span class="text-lg mb-1">Brand Color</span>
                 <input type="text"
                     autocomplete="off"
                     autofocus
-                    class="flex-1 px-4 py-2 rounded-l text-2xl"
+                    class="w-full px-4 py-2 rounded text-xl"
+                    :class="isDarkMode ? 'bg-gray-800 border border-gray-600' : 'bg-white border border-gray-300'"
                     :placeholder="brand"
                     v-model="colorInputValue"
                 >
             </div>
 
-            <div class="flex flex-col">
-                <span class="text-lg">Percent Mix</span>
+            <div class="w-full sm:w-1/2 lg:w-1/4 px-2 mb-4 flex flex-col">
+                <span class="text-lg mb-1">Percent Mix</span>
                 <input type="number"
                     autocomplete="off"
                     min="0.1"
                     max="1"
                     step="0.1"
-                    class="w-32 px-4 py-2 text-2xl"
+                    class="w-full px-4 py-2 rounded text-xl"
+                    :class="isDarkMode ? 'bg-gray-800 border border-gray-600' : 'bg-white border border-gray-300'"
                     :placeholder="percent"
                     v-model="percentInputValue"
                 >
             </div>
 
-            <div class="flex flex-col">
-                <span class="text-lg">Grays Percent Mix</span>
+            <div class="w-full sm:w-1/2 lg:w-1/4 px-2 mb-4 flex flex-col">
+                <span class="text-lg mb-1">Grays Percent Mix</span>
                 <input type="number"
                     autocomplete="off"
                     min="0.1"
                     max="1"
                     step="0.01"
-                    class="w-32 px-4 py-2 text-2xl"
+                    class="w-full px-4 py-2 rounded text-xl"
+                    :class="isDarkMode ? 'bg-gray-800 border border-gray-600' : 'bg-white border border-gray-300'"
                     :placeholder="grayPercent"
                     v-model="grayPercentInputValue"
                 >
             </div>
 
-            <div class="flex flex-col">
-                <span class="text-lg">CTA Hue Shift</span>
-                <div class="flex">
-                    <input type="number"
-                        autocomplete="off"
-                        min="0"
-                        max="255"
-                        class="w-32 px-4 py-2 rounded-l text-2xl"
-                        :placeholder="ctaHueShift"
-                        v-model="ctaHueInputValue"
-                    >
-
-                    <button type="button"
-                        class="bg-gray-100 px-5 rounded-r"
-                        title="Randomize"
-                        @click="colorInputValue = getRandomColor()"
-                    >
-                        <i class="fas fa-random"></i>
-                    </button>
-                </div>
+            <div class="w-full sm:w-1/2 lg:w-1/4 px-2 mb-4 flex flex-col">
+                <span class="text-lg mb-1">CTA Hue Shift</span>
+                <input type="number"
+                    autocomplete="off"
+                    min="0"
+                    max="255"
+                    class="w-full px-4 py-2 rounded text-xl"
+                    :class="isDarkMode ? 'bg-gray-800 border border-gray-600' : 'bg-white border border-gray-300'"
+                    :placeholder="ctaHueShift"
+                    v-model="ctaHueInputValue"
+                >
             </div>
         </div>
 
-        <div class="flex mt-4">
-            <div class="flex flex-col">
-                <span class="text-lg">Tint One Shift</span>
-
+        <div class="flex flex-wrap -mx-2">
+            <div class="w-full sm:w-1/2 lg:w-1/4 px-2 mb-4 flex flex-col">
+                <span class="text-lg mb-1">Tint One Shift</span>
                 <input type="number"
                     autocomplete="off"
                     min="0.1"
                     max="1"
                     step="0.01"
-                    class="w-32 px-4 py-2 rounded-l text-2xl"
+                    class="w-full px-4 py-2 rounded text-xl"
+                    :class="isDarkMode ? 'bg-gray-800 border border-gray-600' : 'bg-white border border-gray-300'"
                     :placeholder="tintOneShift"
                     v-model="tintOneInputValue"
                 >
             </div>
 
-            <div class="flex flex-col">
-                <span class="text-lg">Tint Two Shift</span>
-
+            <div class="w-full sm:w-1/2 lg:w-1/4 px-2 mb-4 flex flex-col">
+                <span class="text-lg mb-1">Tint Two Shift</span>
                 <input type="number"
                     autocomplete="off"
                     min="0.1"
                     max="1"
                     step="0.01"
-                    class="w-32 px-4 py-2 text-2xl"
+                    class="w-full px-4 py-2 rounded text-xl"
+                    :class="isDarkMode ? 'bg-gray-800 border border-gray-600' : 'bg-white border border-gray-300'"
                     :placeholder="tintTwoShift"
                     v-model="tintTwoInputValue"
                 >
             </div>
 
-            <div class="flex flex-col">
-                <span class="text-lg">Shade One Shift</span>
+            <div class="w-full sm:w-1/2 lg:w-1/4 px-2 mb-4 flex flex-col">
+                <span class="text-lg mb-1">Shade One Shift</span>
                 <input type="number"
                     autocomplete="off"
                     min="0.1"
                     max="1"
                     step="0.01"
-                    class="w-32 px-4 py-2 text-2xl"
+                    class="w-full px-4 py-2 rounded text-xl"
+                    :class="isDarkMode ? 'bg-gray-800 border border-gray-600' : 'bg-white border border-gray-300'"
                     :placeholder="shadeOneShift"
                     v-model="shadeOneInputValue"
                 >
             </div>
 
-            <div class="flex flex-col">
-                <span class="text-lg">Shade Two Shift</span>
+            <div class="w-full sm:w-1/2 lg:w-1/4 px-2 mb-4 flex flex-col">
+                <span class="text-lg mb-1">Shade Two Shift</span>
                 <input type="number"
                     autocomplete="off"
                     min="0.1"
                     max="1"
                     step="0.01"
-                    class="w-32 px-4 py-2 text-2xl"
+                    class="w-full px-4 py-2 rounded text-xl"
+                    :class="isDarkMode ? 'bg-gray-800 border border-gray-600' : 'bg-white border border-gray-300'"
                     :placeholder="shadeTwoShift"
                     v-model="shadeTwoInputValue"
                 >
             </div>
         </div>
-    </label>
+    </div>
 
-    <section class="container mx-auto mb-12 px-4">
+    <section class="container mx-auto mb-8 px-4">
         <div class="-mx-4 flex flex-wrap items-start justify-between md:flex-no-wrap">
             <div v-for="color in colors" :key="color.name" class="md:1/6 p-4 sm:w-1/3 w-1/2">
                 <span v-text="color.name"></span>
@@ -151,7 +170,7 @@
         </div>
     </section>
 
-    <section class="container mx-auto mb-12 px-4">
+    <section class="container mx-auto mb-8 px-4">
         <span>Grays</span>
 
         <div class="flex flex-wrap items-center justify-center md:flex-no-wrap overflow-hidden rounded">
@@ -164,12 +183,73 @@
         </div>
     </section>
 
-    <!-- TODO: add SASS/SCSS output tabs -->
-    <!-- TODO: add dark/light mode toggle -->
-    <!-- TODO: add website preview -->
+    <section class="container mx-auto mb-8 px-4">
+        <h2 class="text-lg mb-3">Preview</h2>
 
-    <section class="container mx-auto mb-12 px-4">
-        <div id="output" class="rounded bg-white pt-8 px-4 pb-4 leading-tight text-sm overflow-x-scroll">
+        <!-- TODO: apply dark/light mode toggle to preview content -->
+
+        <div class="rounded overflow-hidden border border-gray-400">
+            <header
+                class="px-4 py-3 flex items-center justify-between text-white"
+                :style="{ backgroundColor: colors.brand.value.hex() }"
+            >
+                <span class="font-bold">My Website</span>
+                <nav class="text-sm">
+                    <span class="mr-4">Home</span>
+                    <span class="mr-4">About</span>
+                    <span>Contact</span>
+                </nav>
+            </header>
+
+            <div
+                class="p-6"
+                :style="{ backgroundColor: grays['gray-lightest'].value.hex() }"
+            >
+                <h3
+                    class="text-2xl mb-2"
+                    :style="{ color: colors.brand.value.hex() }"
+                >
+                    Welcome to your themed site
+                </h3>
+
+                <p
+                    class="mb-4"
+                    :style="{ color: grays['gray-dark'].value.hex() }"
+                >
+                    This is sample body text showing how your color palette looks in a simple layout.
+                </p>
+
+                <button
+                    type="button"
+                    class="px-4 py-2 rounded text-white mr-2"
+                    :style="{ backgroundColor: colors.cta.value.hex() }"
+                >
+                    Get Started
+                </button>
+
+                <button
+                    type="button"
+                    class="px-4 py-2 rounded text-white"
+                    :style="{ backgroundColor: colors.info.value.hex() }"
+                >
+                    Learn More
+                </button>
+            </div>
+
+            <footer
+                class="px-4 py-3 text-sm text-white"
+                :style="{ backgroundColor: grays.black.value.hex() }"
+            >
+                &copy; 2026 My Website
+            </footer>
+        </div>
+    </section>
+
+    <section class="container mx-auto mb-8 px-4">
+        <div id="output"
+            class="rounded pt-8 px-4 pb-4 leading-tight text-sm overflow-x-scroll"
+            :class="isDarkMode ? 'bg-gray-800' : 'bg-white'"
+        >
             <span v-for="(gray, id) in grays" :key="id" class="whitespace-no-wrap">'{{ id }}': '{{ gray.value.hex() }}',<br></span><br>
 
             <span v-for="(color, id) in colors" :key="id" class="whitespace-no-wrap">
@@ -182,7 +262,9 @@
         </div>
     </section>
 
-    <footer class="mb-12 px-3 text-center text-gray-600 text-sm">
+    <footer class="px-3 pb-6 text-center text-sm"
+        :class="isDarkMode ? 'text-gray-400' : 'text-gray-600'"
+    >
         Created by
         <a href="https://twitter.com/adevade" class="underline">@adevade</a>
         | Got suggestions? Feel free to
