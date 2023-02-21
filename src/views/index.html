@@ -186,12 +186,10 @@
     <section class="container mx-auto mb-8 px-4">
         <h2 class="text-lg mb-3">Preview</h2>
 
-        <!-- TODO: apply dark/light mode toggle to preview content -->
-
         <div class="rounded overflow-hidden border border-gray-400">
             <header
                 class="px-4 py-3 flex items-center justify-between text-white"
-                :style="{ backgroundColor: colors.brand.value.hex() }"
+                :style="{ backgroundColor: previewHeaderBackground }"
             >
                 <span class="font-bold">My Website</span>
                 <nav class="text-sm">
@@ -203,18 +201,18 @@
 
             <div
                 class="p-6"
-                :style="{ backgroundColor: grays['gray-lightest'].value.hex() }"
+                :style="{ backgroundColor: previewBodyBackground }"
             >
                 <h3
                     class="text-2xl mb-2"
-                    :style="{ color: colors.brand.value.hex() }"
+                    :style="{ color: previewHeadingColor }"
                 >
                     Welcome to your themed site
                 </h3>
 
                 <p
                     class="mb-4"
-                    :style="{ color: grays['gray-dark'].value.hex() }"
+                    :style="{ color: previewTextColor }"
                 >
                     This is sample body text showing how your color palette looks in a simple layout.
                 </p>
@@ -238,7 +236,7 @@
 
             <footer
                 class="px-4 py-3 text-sm text-white"
-                :style="{ backgroundColor: grays.black.value.hex() }"
+                :style="{ backgroundColor: previewFooterBackground }"
             >
                 &copy; 2026 My Website
             </footer>
@@ -305,6 +303,8 @@
             </div>
         </div>
     </section>
+
+    <!-- TODO: add copy-to-clipboard button -->
 
     <footer class="px-3 pb-6 text-center text-sm"
         :class="isDarkMode ? 'text-gray-400' : 'text-gray-600'"

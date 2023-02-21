@@ -7,6 +7,8 @@ new Vue({
     created() {
         const savedTab = localStorage.getItem('activeTab');
         this.activeTab = savedTab ? savedTab : 'tailwind';
+
+        this.isDarkMode = localStorage.getItem('isDarkMode') === 'true';
     },
 
     data: {
@@ -61,6 +63,36 @@ new Vue({
 
         shadeTwoShift() {
             return this.shadeTwoInputValue;
+        },
+
+        previewHeaderBackground() {
+            return this.isDarkMode
+                ? this.shade(this.brand, this.shadeOneShift).hex()
+                : this.colors.brand.value.hex();
+        },
+
+        previewBodyBackground() {
+            return this.isDarkMode
+                ? this.grays['gray-darkest'].value.hex()
+                : this.grays['gray-lightest'].value.hex();
+        },
+
+        previewHeadingColor() {
+            return this.isDarkMode
+                ? this.tint(this.brand, this.tintTwoShift).hex()
+                : this.colors.brand.value.hex();
+        },
+
+        previewTextColor() {
+            return this.isDarkMode
+                ? this.grays['gray-light'].value.hex()
+                : this.grays['gray-dark'].value.hex();
+        },
+
+        previewFooterBackground() {
+            return this.isDarkMode
+                ? this.grays.black.value.hex()
+                : this.grays['gray-darker'].value.hex();
         },
 
         colors() {
@@ -158,6 +190,7 @@ new Vue({
 
         toggleDarkMode() {
             this.isDarkMode = !this.isDarkMode;
+            localStorage.setItem('isDarkMode', this.isDarkMode);
         },
     },
 });

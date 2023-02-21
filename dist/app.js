@@ -17276,6 +17276,7 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
   created: function created() {
     var savedTab = localStorage.getItem('activeTab');
     this.activeTab = savedTab ? savedTab : 'tailwind';
+    this.isDarkMode = localStorage.getItem('isDarkMode') === 'true';
   },
   data: {
     activeTab: 'tailwind',
@@ -17324,6 +17325,21 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     },
     shadeTwoShift: function shadeTwoShift() {
       return this.shadeTwoInputValue;
+    },
+    previewHeaderBackground: function previewHeaderBackground() {
+      return this.isDarkMode ? this.shade(this.brand, this.shadeOneShift).hex() : this.colors.brand.value.hex();
+    },
+    previewBodyBackground: function previewBodyBackground() {
+      return this.isDarkMode ? this.grays['gray-darkest'].value.hex() : this.grays['gray-lightest'].value.hex();
+    },
+    previewHeadingColor: function previewHeadingColor() {
+      return this.isDarkMode ? this.tint(this.brand, this.tintTwoShift).hex() : this.colors.brand.value.hex();
+    },
+    previewTextColor: function previewTextColor() {
+      return this.isDarkMode ? this.grays['gray-light'].value.hex() : this.grays['gray-dark'].value.hex();
+    },
+    previewFooterBackground: function previewFooterBackground() {
+      return this.isDarkMode ? this.grays.black.value.hex() : this.grays['gray-darker'].value.hex();
     },
     colors: function colors() {
       return {
@@ -17413,6 +17429,7 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     },
     toggleDarkMode: function toggleDarkMode() {
       this.isDarkMode = !this.isDarkMode;
+      localStorage.setItem('isDarkMode', this.isDarkMode);
     }
   }
 });
