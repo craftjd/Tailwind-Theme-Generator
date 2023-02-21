@@ -4,7 +4,14 @@ import chroma from 'chroma-js';
 new Vue({
     el: '#app',
 
+    created() {
+        const savedTab = localStorage.getItem('activeTab');
+        this.activeTab = savedTab ? savedTab : 'tailwind';
+    },
+
     data: {
+        activeTab: 'tailwind',
+        defaultBrandHex: '#6366f1',
         colorInputValue: '',
         percentInputValue: '0.4',
         grayPercentInputValue: '0.2',
@@ -14,13 +21,18 @@ new Vue({
         shadeOneInputValue: '.55',
         shadeTwoInputValue: '.3',
         isDarkMode: false,
+        tabs: [
+            { id: 'tailwind', title: 'Tailwind' },
+            { id: 'sass', title: 'SASS' },
+            { id: 'scss', title: 'SCSS' },
+        ],
     },
 
     computed: {
         brand() {
-            return !this.colorInputValue
-                ? this.getRandomColor()
-                : chroma(this.colorInputValue);
+            return this.colorInputValue
+                ? chroma(this.colorInputValue)
+                : chroma(this.defaultBrandHex);
         },
 
         percent() {
@@ -123,6 +135,11 @@ new Vue({
     },
 
     methods: {
+        setActiveTab(tab) {
+            this.activeTab = tab;
+            localStorage.setItem('activeTab', tab);
+        },
+
         getRandomColor() {
             return chroma.random();
         },
@@ -131,12 +148,12 @@ new Vue({
             this.colorInputValue = this.getRandomColor().hex();
         },
 
-        tint(hex, factor) {
-            return chroma.mix('#fff', hex, factor, 'lab');
+        tint(color, factor) {
+            return chroma.mix('#fff', color, factor, 'lab');
         },
 
-        shade(hex, factor) {
-            return chroma.mix('#000', hex, factor, 'lab');
+        shade(color, factor) {
+            return chroma.mix('#000', color, factor, 'lab');
         },
 
         toggleDarkMode() {

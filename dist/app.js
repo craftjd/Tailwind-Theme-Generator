@@ -17273,7 +17273,13 @@ __webpack_require__.r(__webpack_exports__);
 
 new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
   el: '#app',
+  created: function created() {
+    var savedTab = localStorage.getItem('activeTab');
+    this.activeTab = savedTab ? savedTab : 'tailwind';
+  },
   data: {
+    activeTab: 'tailwind',
+    defaultBrandHex: '#6366f1',
     colorInputValue: '',
     percentInputValue: '0.4',
     grayPercentInputValue: '0.2',
@@ -17282,11 +17288,21 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     tintTwoInputValue: '.3',
     shadeOneInputValue: '.55',
     shadeTwoInputValue: '.3',
-    isDarkMode: false
+    isDarkMode: false,
+    tabs: [{
+      id: 'tailwind',
+      title: 'Tailwind'
+    }, {
+      id: 'sass',
+      title: 'SASS'
+    }, {
+      id: 'scss',
+      title: 'SCSS'
+    }]
   },
   computed: {
     brand: function brand() {
-      return !this.colorInputValue ? this.getRandomColor() : Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.colorInputValue);
+      return this.colorInputValue ? Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.colorInputValue) : Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.defaultBrandHex);
     },
     percent: function percent() {
       return this.percentInputValue;
@@ -17379,17 +17395,21 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     }
   },
   methods: {
+    setActiveTab: function setActiveTab(tab) {
+      this.activeTab = tab;
+      localStorage.setItem('activeTab', tab);
+    },
     getRandomColor: function getRandomColor() {
       return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].random();
     },
     randomizeTheme: function randomizeTheme() {
       this.colorInputValue = this.getRandomColor().hex();
     },
-    tint: function tint(hex, factor) {
-      return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].mix('#fff', hex, factor, 'lab');
+    tint: function tint(color, factor) {
+      return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].mix('#fff', color, factor, 'lab');
     },
-    shade: function shade(hex, factor) {
-      return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].mix('#000', hex, factor, 'lab');
+    shade: function shade(color, factor) {
+      return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].mix('#000', color, factor, 'lab');
     },
     toggleDarkMode: function toggleDarkMode() {
       this.isDarkMode = !this.isDarkMode;

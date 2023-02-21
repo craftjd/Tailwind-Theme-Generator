@@ -48,7 +48,7 @@
                     autofocus
                     class="w-full px-4 py-2 rounded text-xl"
                     :class="isDarkMode ? 'bg-gray-800 border border-gray-600' : 'bg-white border border-gray-300'"
-                    :placeholder="brand"
+                    :placeholder="brand.hex()"
                     v-model="colorInputValue"
                 >
             </div>
@@ -160,11 +160,11 @@
                 <span v-text="color.name"></span>
 
                 <div class="flex flex-col h-32 overflow-hidden rounded">
-                    <span :style="{ backgroundColor: tint(color.value.hex(), tintOneShift).hex() }" class="h-5"></span>
-                    <span :style="{ backgroundColor: tint(color.value.hex(), tintTwoShift).hex() }" class="h-5"></span>
+                    <span :style="{ backgroundColor: tint(color.value, tintOneShift).hex() }" class="h-5"></span>
+                    <span :style="{ backgroundColor: tint(color.value, tintTwoShift).hex() }" class="h-5"></span>
                     <span :style="{ backgroundColor: color.value.hex() }" class="flex-1"></span>
-                    <span :style="{ backgroundColor: shade(color.value.hex(), shadeOneShift).hex() }" class="h-5"></span>
-                    <span :style="{ backgroundColor: shade(color.value.hex(), shadeTwoShift).hex() }" class="h-5"></span>
+                    <span :style="{ backgroundColor: shade(color.value, shadeOneShift).hex() }" class="h-5"></span>
+                    <span :style="{ backgroundColor: shade(color.value, shadeTwoShift).hex() }" class="h-5"></span>
                 </div>
             </div>
         </div>
@@ -246,19 +246,63 @@
     </section>
 
     <section class="container mx-auto mb-8 px-4">
-        <div id="output"
-            class="rounded pt-8 px-4 pb-4 leading-tight text-sm overflow-x-scroll"
-            :class="isDarkMode ? 'bg-gray-800' : 'bg-white'"
-        >
-            <span v-for="(gray, id) in grays" :key="id" class="whitespace-no-wrap">'{{ id }}': '{{ gray.value.hex() }}',<br></span><br>
+        <div class="flex flex-wrap">
+            <span
+                v-for="tab in tabs"
+                :key="tab.id"
+                class="cursor-pointer mr-2 px-2 py-1 rounded-t sm:px-4 sm:py-2 sm:text-base text-sm"
+                role="tab"
+                :class="{
+                    'bg-white text-gray-800': activeTab === tab.id && !isDarkMode,
+                    'bg-gray-800 text-gray-100': activeTab === tab.id && isDarkMode,
+                }"
+                @click="setActiveTab(tab.id)"
+                v-text="tab.title"
+            ></span>
+        </div>
 
-            <span v-for="(color, id) in colors" :key="id" class="whitespace-no-wrap">
-                '{{ id }}-lighter': '{{ tint(color.value.hex(), tintOneShift).hex() }}',<br>
-                '{{ id }}-light': '{{ tint(color.value.hex(), tintTwoShift).hex() }}',<br>
-                '{{ id }}': '{{ color.value.hex() }}',<br>
-                '{{ id }}-dark': '{{ shade(color.value.hex(), shadeOneShift).hex() }}',<br>
-                '{{ id }}-darker': '{{ shade(color.value.hex(), shadeTwoShift).hex() }}',<br><br>
-            </span>
+        <div id="output"
+            class="rounded-b rounded-tr pt-8 px-4 pb-4 leading-tight text-sm"
+            :class="[
+                isDarkMode ? 'bg-gray-800' : 'bg-white',
+                { 'rounded-t': activeTab !== 'tailwind' },
+            ]"
+        >
+            <div v-if="activeTab === 'tailwind'" class="overflow-x-scroll">
+                <span v-for="(gray, id) in grays" :key="id" class="whitespace-no-wrap">'{{ id }}': '{{ gray.value.hex() }}',<br></span><br>
+
+                <span v-for="(color, id) in colors" :key="id" class="whitespace-no-wrap">
+                    '{{ id }}-lighter': '{{ tint(color.value, tintOneShift).hex() }}',<br>
+                    '{{ id }}-light': '{{ tint(color.value, tintTwoShift).hex() }}',<br>
+                    '{{ id }}': '{{ color.value.hex() }}',<br>
+                    '{{ id }}-dark': '{{ shade(color.value, shadeOneShift).hex() }}',<br>
+                    '{{ id }}-darker': '{{ shade(color.value, shadeTwoShift).hex() }}',<br><br>
+                </span>
+            </div>
+
+            <div v-if="activeTab === 'sass'" class="overflow-x-scroll">
+                <span v-for="(gray, id) in grays" :key="id" class="whitespace-no-wrap">${{ id }}: {{ gray.value.hex() }}<br></span><br>
+
+                <span v-for="(color, id) in colors" :key="id" class="whitespace-no-wrap">
+                    ${{ id }}-lighter: {{ tint(color.value, tintOneShift).hex() }}<br>
+                    ${{ id }}-light: {{ tint(color.value, tintTwoShift).hex() }}<br>
+                    ${{ id }}: {{ color.value.hex() }}<br>
+                    ${{ id }}-dark: {{ shade(color.value, shadeOneShift).hex() }}<br>
+                    ${{ id }}-darker: {{ shade(color.value, shadeTwoShift).hex() }}<br><br>
+                </span>
+            </div>
+
+            <div v-if="activeTab === 'scss'" class="overflow-x-scroll">
+                <span v-for="(gray, id) in grays" :key="id" class="whitespace-no-wrap">${{ id }}: {{ gray.value.hex() }};<br></span><br>
+
+                <span v-for="(color, id) in colors" :key="id" class="whitespace-no-wrap">
+                    ${{ id }}-lighter: {{ tint(color.value, tintOneShift).hex() }};<br>
+                    ${{ id }}-light: {{ tint(color.value, tintTwoShift).hex() }};<br>
+                    ${{ id }}: {{ color.value.hex() }};<br>
+                    ${{ id }}-dark: {{ shade(color.value, shadeOneShift).hex() }};<br>
+                    ${{ id }}-darker: {{ shade(color.value, shadeTwoShift).hex() }};<br><br>
+                </span>
+            </div>
         </div>
     </section>
 
