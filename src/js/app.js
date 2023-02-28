@@ -23,6 +23,7 @@ new Vue({
         shadeOneInputValue: '.55',
         shadeTwoInputValue: '.3',
         isDarkMode: false,
+        showAdvancedShifts: false,
         tabs: [
             { id: 'tailwind', title: 'Tailwind' },
             { id: 'sass', title: 'SASS' },
@@ -41,6 +42,12 @@ new Vue({
     },
 
     computed: {
+        inputClass() {
+            return this.isDarkMode
+                ? 'bg-gray-800 border border-gray-600'
+                : 'bg-white border border-gray-300';
+        },
+
         brand() {
             return this.colorInputValue
                 ? chroma(this.colorInputValue)

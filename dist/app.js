@@ -17290,6 +17290,7 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     shadeOneInputValue: '.55',
     shadeTwoInputValue: '.3',
     isDarkMode: false,
+    showAdvancedShifts: false,
     tabs: [{
       id: 'tailwind',
       title: 'Tailwind'
@@ -17325,6 +17326,9 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     }]
   },
   computed: {
+    inputClass: function inputClass() {
+      return this.isDarkMode ? 'bg-gray-800 border border-gray-600' : 'bg-white border border-gray-300';
+    },
     brand: function brand() {
       return this.colorInputValue ? Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.colorInputValue) : Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.defaultBrandHex);
     },
