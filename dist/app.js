@@ -17299,6 +17299,29 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     }, {
       id: 'scss',
       title: 'SCSS'
+    }],
+    previewFeatures: [{
+      icon: 'fa-bolt',
+      title: 'Fast setup',
+      description: 'Drop generated tokens into your config and ship.'
+    }, {
+      icon: 'fa-palette',
+      title: 'Cohesive palette',
+      description: 'Brand, semantic, and gray scales stay in sync.'
+    }, {
+      icon: 'fa-mobile-alt',
+      title: 'Responsive ready',
+      description: 'Preview patterns that scale from mobile to desktop.'
+    }],
+    previewStats: [{
+      label: 'Active users',
+      value: '12.4k'
+    }, {
+      label: 'Uptime',
+      value: '99.9%'
+    }, {
+      label: 'Countries',
+      value: '48'
     }]
   },
   computed: {
@@ -17338,8 +17361,26 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     previewTextColor: function previewTextColor() {
       return this.isDarkMode ? this.grays['gray-light'].value.hex() : this.grays['gray-dark'].value.hex();
     },
+    previewMutedTextColor: function previewMutedTextColor() {
+      return this.isDarkMode ? this.grays.gray.value.hex() : this.grays['gray-dark'].value.hex();
+    },
+    previewCardBackground: function previewCardBackground() {
+      return this.isDarkMode ? this.grays['gray-darker'].value.hex() : this.grays.white.value.hex();
+    },
+    previewBorderColor: function previewBorderColor() {
+      return this.isDarkMode ? this.grays['gray-dark'].value.hex() : this.grays['gray-lighter'].value.hex();
+    },
+    previewChromeBackground: function previewChromeBackground() {
+      return this.isDarkMode ? this.grays.black.value.hex() : this.grays['gray-lighter'].value.hex();
+    },
     previewFooterBackground: function previewFooterBackground() {
       return this.isDarkMode ? this.grays.black.value.hex() : this.grays['gray-darker'].value.hex();
+    },
+    previewInfoAlertBackground: function previewInfoAlertBackground() {
+      return this.tint(this.colors.info.value, this.tintTwoShift).hex();
+    },
+    previewSuccessAlertBackground: function previewSuccessAlertBackground() {
+      return this.tint(this.colors.success.value, this.tintTwoShift).hex();
     },
     colors: function colors() {
       return {
