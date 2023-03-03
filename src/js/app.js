@@ -24,6 +24,7 @@ new Vue({
         shadeTwoInputValue: '.3',
         isDarkMode: false,
         showAdvancedShifts: false,
+        copied: false,
         tabs: [
             { id: 'tailwind', title: 'Tailwind' },
             { id: 'sass', title: 'SASS' },
@@ -144,6 +145,63 @@ new Vue({
             return this.tint(this.colors.success.value, this.tintTwoShift).hex();
         },
 
+        outputText() {
+            const lines = [];
+
+            if (this.activeTab === 'tailwind') {
+                Object.keys(this.grays).forEach((id) => {
+                    lines.push(`'${id}': '${this.grays[id].value.hex()}',`);
+                });
+                lines.push('');
+
+                Object.keys(this.colors).forEach((id) => {
+                    const color = this.colors[id].value;
+                    lines.push(`'${id}-lighter': '${this.tint(color, this.tintOneShift).hex()}',`);
+                    lines.push(`'${id}-light': '${this.tint(color, this.tintTwoShift).hex()}',`);
+                    lines.push(`'${id}': '${color.hex()}',`);
+                    lines.push(`'${id}-dark': '${this.shade(color, this.shadeOneShift).hex()}',`);
+                    lines.push(`'${id}-darker': '${this.shade(color, this.shadeTwoShift).hex()}',`);
+                    lines.push('');
+                });
+            }
+
+            if (this.activeTab === 'sass') {
+                Object.keys(this.grays).forEach((id) => {
+                    lines.push(`$${id}: ${this.grays[id].value.hex()}`);
+                });
+                lines.push('');
+
+                Object.keys(this.colors).forEach((id) => {
+                    const color = this.colors[id].value;
+                    lines.push(`$${id}-lighter: ${this.tint(color, this.tintOneShift).hex()}`);
+                    lines.push(`$${id}-light: ${this.tint(color, this.tintTwoShift).hex()}`);
+                    lines.push(`$${id}: ${color.hex()}`);
+                    lines.push(`$${id}-dark: ${this.shade(color, this.shadeOneShift).hex()}`);
+                    lines.push(`$${id}-darker: ${this.shade(color, this.shadeTwoShift).hex()}`);
+                    lines.push('');
+                });
+            }
+
+            if (this.activeTab === 'scss') {
+                Object.keys(this.grays).forEach((id) => {
+                    lines.push(`$${id}: ${this.grays[id].value.hex()};`);
+                });
+                lines.push('');
+
+                Object.keys(this.colors).forEach((id) => {
+                    const color = this.colors[id].value;
+                    lines.push(`$${id}-lighter: ${this.tint(color, this.tintOneShift).hex()};`);
+                    lines.push(`$${id}-light: ${this.tint(color, this.tintTwoShift).hex()};`);
+                    lines.push(`$${id}: ${color.hex()};`);
+                    lines.push(`$${id}-dark: ${this.shade(color, this.shadeOneShift).hex()};`);
+                    lines.push(`$${id}-darker: ${this.shade(color, this.shadeTwoShift).hex()};`);
+                    lines.push('');
+                });
+            }
+
+            return lines.join('\n');
+        },
+
         colors() {
             return {
                 brand: {
@@ -240,6 +298,40 @@ new Vue({
         toggleDarkMode() {
             this.isDarkMode = !this.isDarkMode;
             localStorage.setItem('isDarkMode', this.isDarkMode);
+        },
+
+        copyOutput() {
+            const text = this.outputText;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    this.showCopiedFeedback();
+                });
+                return;
+            }
+
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.setAttribute('readonly', '');
+            textarea.style.position = 'absolute';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            this.showCopiedFeedback();
+        },
+
+        showCopiedFeedback() {
+            this.copied = true;
+
+            if (this.copyFeedbackTimeout) {
+                clearTimeout(this.copyFeedbackTimeout);
+            }
+
+            this.copyFeedbackTimeout = setTimeout(() => {
+                this.copied = false;
+            }, 2000);
         },
     },
 });

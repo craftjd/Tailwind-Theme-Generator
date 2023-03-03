@@ -501,23 +501,34 @@
 
     <!-- Code output below the viewport workspace -->
     <section class="container mx-auto mb-8 px-4 pt-6">
-        <div class="flex flex-wrap">
-            <span
-                v-for="tab in tabs"
-                :key="tab.id"
-                class="cursor-pointer mr-2 px-2 py-1 rounded-t sm:px-4 sm:py-2 sm:text-base text-sm"
-                role="tab"
-                :class="{
-                    'bg-white text-gray-800': activeTab === tab.id && !isDarkMode,
-                    'bg-gray-800 text-gray-100': activeTab === tab.id && isDarkMode,
-                }"
-                @click="setActiveTab(tab.id)"
-                v-text="tab.title"
-            ></span>
+        <div class="flex flex-wrap items-center justify-between mb-2">
+            <div class="flex flex-wrap">
+                <span
+                    v-for="tab in tabs"
+                    :key="tab.id"
+                    class="cursor-pointer mr-2 px-2 py-1 rounded-t sm:px-4 sm:py-2 sm:text-base text-sm"
+                    role="tab"
+                    :class="{
+                        'bg-white text-gray-800': activeTab === tab.id && !isDarkMode,
+                        'bg-gray-800 text-gray-100': activeTab === tab.id && isDarkMode,
+                    }"
+                    @click="setActiveTab(tab.id)"
+                    v-text="tab.title"
+                ></span>
+            </div>
+
+            <button type="button"
+                class="inline-flex items-center px-3 py-1 mt-2 sm:mt-0 text-sm rounded"
+                :class="isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-white hover:bg-gray-100'"
+                @click="copyOutput"
+            >
+                <i class="fas mr-2" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+                <span v-text="copied ? 'Copied!' : 'Copy to clipboard'"></span>
+            </button>
         </div>
 
         <div id="output"
-            class="rounded-b rounded-tr pt-8 px-4 pb-4 leading-tight text-sm"
+            class="rounded-b rounded-tr pt-8 px-4 pb-4 leading-tight text-sm relative"
             :class="[
                 isDarkMode ? 'bg-gray-800' : 'bg-white',
                 { 'rounded-t': activeTab !== 'tailwind' },
@@ -560,8 +571,6 @@
             </div>
         </div>
     </section>
-
-    <!-- TODO: add copy-to-clipboard button -->
 
     <footer class="px-3 pb-6 text-center text-sm"
         :class="isDarkMode ? 'text-gray-400' : 'text-gray-600'"

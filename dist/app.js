@@ -17291,6 +17291,7 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     shadeTwoInputValue: '.3',
     isDarkMode: false,
     showAdvancedShifts: false,
+    copied: false,
     tabs: [{
       id: 'tailwind',
       title: 'Tailwind'
@@ -17386,6 +17387,56 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     previewSuccessAlertBackground: function previewSuccessAlertBackground() {
       return this.tint(this.colors.success.value, this.tintTwoShift).hex();
     },
+    outputText: function outputText() {
+      var _this = this;
+      var lines = [];
+      if (this.activeTab === 'tailwind') {
+        Object.keys(this.grays).forEach(function (id) {
+          lines.push("'".concat(id, "': '").concat(_this.grays[id].value.hex(), "',"));
+        });
+        lines.push('');
+        Object.keys(this.colors).forEach(function (id) {
+          var color = _this.colors[id].value;
+          lines.push("'".concat(id, "-lighter': '").concat(_this.tint(color, _this.tintOneShift).hex(), "',"));
+          lines.push("'".concat(id, "-light': '").concat(_this.tint(color, _this.tintTwoShift).hex(), "',"));
+          lines.push("'".concat(id, "': '").concat(color.hex(), "',"));
+          lines.push("'".concat(id, "-dark': '").concat(_this.shade(color, _this.shadeOneShift).hex(), "',"));
+          lines.push("'".concat(id, "-darker': '").concat(_this.shade(color, _this.shadeTwoShift).hex(), "',"));
+          lines.push('');
+        });
+      }
+      if (this.activeTab === 'sass') {
+        Object.keys(this.grays).forEach(function (id) {
+          lines.push("$".concat(id, ": ").concat(_this.grays[id].value.hex()));
+        });
+        lines.push('');
+        Object.keys(this.colors).forEach(function (id) {
+          var color = _this.colors[id].value;
+          lines.push("$".concat(id, "-lighter: ").concat(_this.tint(color, _this.tintOneShift).hex()));
+          lines.push("$".concat(id, "-light: ").concat(_this.tint(color, _this.tintTwoShift).hex()));
+          lines.push("$".concat(id, ": ").concat(color.hex()));
+          lines.push("$".concat(id, "-dark: ").concat(_this.shade(color, _this.shadeOneShift).hex()));
+          lines.push("$".concat(id, "-darker: ").concat(_this.shade(color, _this.shadeTwoShift).hex()));
+          lines.push('');
+        });
+      }
+      if (this.activeTab === 'scss') {
+        Object.keys(this.grays).forEach(function (id) {
+          lines.push("$".concat(id, ": ").concat(_this.grays[id].value.hex(), ";"));
+        });
+        lines.push('');
+        Object.keys(this.colors).forEach(function (id) {
+          var color = _this.colors[id].value;
+          lines.push("$".concat(id, "-lighter: ").concat(_this.tint(color, _this.tintOneShift).hex(), ";"));
+          lines.push("$".concat(id, "-light: ").concat(_this.tint(color, _this.tintTwoShift).hex(), ";"));
+          lines.push("$".concat(id, ": ").concat(color.hex(), ";"));
+          lines.push("$".concat(id, "-dark: ").concat(_this.shade(color, _this.shadeOneShift).hex(), ";"));
+          lines.push("$".concat(id, "-darker: ").concat(_this.shade(color, _this.shadeTwoShift).hex(), ";"));
+          lines.push('');
+        });
+      }
+      return lines.join('\n');
+    },
     colors: function colors() {
       return {
         brand: {
@@ -17475,6 +17526,36 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     toggleDarkMode: function toggleDarkMode() {
       this.isDarkMode = !this.isDarkMode;
       localStorage.setItem('isDarkMode', this.isDarkMode);
+    },
+    copyOutput: function copyOutput() {
+      var _this2 = this;
+      var text = this.outputText;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () {
+          _this2.showCopiedFeedback();
+        });
+        return;
+      }
+      var textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.setAttribute('readonly', '');
+      textarea.style.position = 'absolute';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      this.showCopiedFeedback();
+    },
+    showCopiedFeedback: function showCopiedFeedback() {
+      var _this3 = this;
+      this.copied = true;
+      if (this.copyFeedbackTimeout) {
+        clearTimeout(this.copyFeedbackTimeout);
+      }
+      this.copyFeedbackTimeout = setTimeout(function () {
+        _this3.copied = false;
+      }, 2000);
     }
   }
 });
