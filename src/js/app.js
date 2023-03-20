@@ -31,15 +31,33 @@ new Vue({
             { id: 'scss', title: 'SCSS' },
         ],
         previewFeatures: [
-            { icon: 'fa-bolt', title: 'Fast setup', description: 'Drop generated tokens into your config and ship.' },
-            { icon: 'fa-palette', title: 'Cohesive palette', description: 'Brand, semantic, and gray scales stay in sync.' },
-            { icon: 'fa-mobile-alt', title: 'Responsive ready', description: 'Preview patterns that scale from mobile to desktop.' },
+            { icon: 'fa-magic', title: 'Semantic harmony', description: 'Info, success, and danger tones inherit your brand DNA automatically.' },
+            { icon: 'fa-chart-line', title: 'Readable data viz', description: 'Charts and metrics stay legible in light and dark surfaces.' },
+            { icon: 'fa-shield-alt', title: 'Accessible pairs', description: 'Text, borders, and fills are tuned for everyday UI density.' },
         ],
-        previewStats: [
-            { label: 'Active users', value: '12.4k' },
-            { label: 'Uptime', value: '99.9%' },
-            { label: 'Countries', value: '48' },
+        previewMetrics: [
+            { label: 'Contrast score', value: '94', meta: '+6 this week', positive: true, icon: 'fa-universal-access' },
+            { label: 'Active tokens', value: '128', meta: 'All formats', positive: true, icon: 'fa-layer-group' },
+            { label: 'Gray ramp', value: '10', meta: 'Brand-tinted', positive: true, icon: 'fa-adjust' },
+            { label: 'Preview modes', value: '2', meta: 'Light & dark', positive: true, icon: 'fa-moon' },
         ],
+        previewNavItems: [
+            { icon: 'fa-th-large', label: 'Overview', active: true },
+            { icon: 'fa-palette', label: 'Palettes' },
+            { icon: 'fa-code', label: 'Export' },
+            { icon: 'fa-sliders', label: 'Settings' },
+        ],
+        previewActivity: [
+            { time: 'Just now', title: 'Brand base updated', detail: 'Primary swatch recalculated across semantic colors.', tone: 'brand' },
+            { time: '4m ago', title: 'Gray ramp shifted', detail: 'Neutral surfaces picked up a subtle brand cast.', tone: 'info' },
+            { time: '12m ago', title: 'Export ready', detail: 'Tailwind, SASS, and SCSS outputs are in sync.', tone: 'success' },
+        ],
+        previewDeployments: [
+            { name: 'Marketing site', env: 'Production', status: 'success', progress: '100%' },
+            { name: 'Design system', env: 'Staging', status: 'warning', progress: '68%' },
+            { name: 'Mobile app', env: 'Review', status: 'brand', progress: 'Draft' },
+        ],
+        previewChartBars: [42, 68, 55, 84, 61, 92, 74],
     },
 
     computed: {
@@ -143,6 +161,20 @@ new Vue({
 
         previewSuccessAlertBackground() {
             return this.tint(this.colors.success.value, this.tintTwoShift).hex();
+        },
+
+        previewHeroGradient() {
+            return `linear-gradient(145deg, ${this.tint(this.brand, this.tintTwoShift).hex()} 0%, ${this.previewBodyBackground} 45%, ${this.tint(this.colors.cta.value, this.tintOneShift).hex()} 100%)`;
+        },
+
+        previewSidebarBackground() {
+            return this.isDarkMode
+                ? this.grays.black.value.hex()
+                : this.grays.white.value.hex();
+        },
+
+        previewSidebarActiveBackground() {
+            return this.tint(this.brand, this.tintTwoShift).hex();
         },
 
         outputText() {
@@ -298,6 +330,18 @@ new Vue({
         toggleDarkMode() {
             this.isDarkMode = !this.isDarkMode;
             localStorage.setItem('isDarkMode', this.isDarkMode);
+        },
+
+        previewStatusColor(status) {
+            const colors = {
+                success: this.colors.success.value,
+                warning: this.colors.warning.value,
+                danger: this.colors.danger.value,
+                brand: this.colors.brand.value,
+                info: this.colors.info.value,
+            };
+
+            return colors[status] ? colors[status].hex() : this.colors.info.value.hex();
         },
 
         copyOutput() {
