@@ -171,12 +171,12 @@
                     </span>
                 </div>
 
-                <div class="flex-1 overflow-y-auto p-3" style="min-height: 0;">
+                <div class="flex-1 overflow-hidden p-3" style="min-height: 0;">
         <div
-            class="rounded-xl overflow-hidden shadow-lg font-sans mx-auto max-w-5xl"
+            class="rounded-xl overflow-hidden shadow-lg font-sans h-full flex flex-col"
             :style="{ border: '1px solid ' + previewBorderColor }"
         >
-            <div class="flex items-center px-3 py-2" :style="{ backgroundColor: previewChromeBackground }">
+            <div class="flex-none flex items-center px-3 py-2" :style="{ backgroundColor: previewChromeBackground }">
                 <span class="w-2 h-2 rounded-full bg-red-400 mr-1"></span>
                 <span class="w-2 h-2 rounded-full bg-yellow-400 mr-1"></span>
                 <span class="w-2 h-2 rounded-full bg-green-400 mr-2"></span>
@@ -186,30 +186,9 @@
                 </div>
             </div>
 
-            <div class="flex" :style="{ backgroundColor: previewBodyBackground }">
-                <aside class="hidden sm:block w-16 md:w-44 flex-none py-4 border-r"
-                    :style="{ backgroundColor: previewSidebarBackground, borderColor: previewBorderColor }">
-                    <div class="px-3 mb-5 flex items-center">
-                        <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white text-sm font-bold mr-0 md:mr-2"
-                            :style="{ backgroundColor: colors.brand.value.hex() }">P</span>
-                        <span class="hidden md:inline font-bold text-sm" :style="{ color: previewHeadingColor }">Palette</span>
-                    </div>
-                    <nav>
-                        <div v-for="item in previewNavItems" :key="item.label"
-                            class="mx-2 mb-1 px-2 py-2 rounded-lg text-xs md:text-sm flex items-center cursor-default"
-                            :style="item.active ? {
-                                backgroundColor: previewSidebarActiveBackground,
-                                color: colors.brand.value.hex(),
-                                fontWeight: '600',
-                            } : { color: previewMutedTextColor }">
-                            <i class="fas w-5 text-center mr-0 md:mr-2" :class="item.icon"></i>
-                            <span class="hidden md:inline" v-text="item.label"></span>
-                        </div>
-                    </nav>
-                </aside>
-
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center justify-between px-4 py-3 border-b"
+            <div class="flex flex-col md:flex-row flex-1 overflow-hidden" :style="{ backgroundColor: previewBodyBackground, minHeight: 0 }">
+                <div class="flex-1 min-w-0 flex flex-col overflow-hidden">
+                    <div class="flex-none flex items-center justify-between px-4 py-3 border-b"
                         :style="{ borderColor: previewBorderColor, backgroundColor: previewCardBackground }">
                         <div class="text-xs md:text-sm" :style="{ color: previewMutedTextColor }">
                             Themes <span class="mx-1 opacity-50">/</span>
@@ -227,7 +206,7 @@
                         </div>
                     </div>
 
-                    <div class="p-4 md:p-6" :style="{ background: previewHeroGradient }">
+                    <div class="flex-1 overflow-y-auto p-4 md:p-6" :style="{ background: previewHeroGradient, minHeight: 0 }">
                         <div class="rounded-2xl p-4 md:p-6 mb-4"
                             :style="{ backgroundColor: previewCardBackground, border: '1px solid ' + previewBorderColor }">
                             <div class="flex flex-wrap items-start justify-between mb-4">
@@ -365,6 +344,94 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Generated code panel (replaces squished preview sidebar) -->
+                <aside
+                    class="flex-none flex flex-col overflow-hidden border-t md:border-t-0 md:border-l md:w-72 xl:w-80 max-h-64 md:max-h-none"
+                    :style="{ borderColor: previewBorderColor, backgroundColor: previewCardBackground, minHeight: 0 }"
+                >
+                    <div class="flex-none px-3 py-3 border-b" :style="{ borderColor: previewBorderColor }">
+                        <div class="flex items-center mb-2">
+                            <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white text-sm font-bold mr-2"
+                                :style="{ backgroundColor: colors.brand.value.hex() }">
+                                <i class="fas fa-code"></i>
+                            </span>
+                            <span class="font-bold text-sm" :style="{ color: previewHeadingColor }">Generated code</span>
+                        </div>
+
+                        <div class="flex flex-wrap items-center justify-between">
+                            <div class="flex flex-wrap">
+                                <span
+                                    v-for="tab in tabs"
+                                    :key="tab.id"
+                                    class="cursor-pointer mr-1 mb-1 px-2 py-1 rounded text-xs font-semibold"
+                                    role="tab"
+                                    :style="activeTab === tab.id ? {
+                                        backgroundColor: tint(colors.brand.value, tintTwoShift).hex(),
+                                        color: colors.brand.value.hex(),
+                                    } : { color: previewMutedTextColor }"
+                                    @click="setActiveTab(tab.id)"
+                                    v-text="tab.title"
+                                ></span>
+                            </div>
+
+                            <button type="button"
+                                class="inline-flex items-center px-2 py-1 mb-1 text-xs font-semibold rounded"
+                                :style="{
+                                    backgroundColor: previewBodyBackground,
+                                    color: previewHeadingColor,
+                                    border: '1px solid ' + previewBorderColor,
+                                }"
+                                @click="copyOutput"
+                            >
+                                <i class="fas mr-1" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+                                <span v-text="copied ? 'Copied!' : 'Copy'"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div
+                        id="output"
+                        class="flex-1 overflow-y-auto overflow-x-auto p-3 leading-tight text-xs font-mono"
+                        :style="{ color: previewTextColor, minHeight: 0 }"
+                    >
+                        <div v-if="activeTab === 'tailwind'">
+                            <span v-for="(gray, id) in grays" :key="id" class="whitespace-no-wrap">'{{ id }}': '{{ gray.value.hex() }}',<br></span><br>
+
+                            <span v-for="(color, id) in colors" :key="id" class="whitespace-no-wrap">
+                                '{{ id }}-lighter': '{{ tint(color.value, tintOneShift).hex() }}',<br>
+                                '{{ id }}-light': '{{ tint(color.value, tintTwoShift).hex() }}',<br>
+                                '{{ id }}': '{{ color.value.hex() }}',<br>
+                                '{{ id }}-dark': '{{ shade(color.value, shadeOneShift).hex() }}',<br>
+                                '{{ id }}-darker': '{{ shade(color.value, shadeTwoShift).hex() }}',<br><br>
+                            </span>
+                        </div>
+
+                        <div v-if="activeTab === 'sass'">
+                            <span v-for="(gray, id) in grays" :key="id" class="whitespace-no-wrap">${{ id }}: {{ gray.value.hex() }}<br></span><br>
+
+                            <span v-for="(color, id) in colors" :key="id" class="whitespace-no-wrap">
+                                ${{ id }}-lighter: {{ tint(color.value, tintOneShift).hex() }}<br>
+                                ${{ id }}-light: {{ tint(color.value, tintTwoShift).hex() }}<br>
+                                ${{ id }}: {{ color.value.hex() }}<br>
+                                ${{ id }}-dark: {{ shade(color.value, shadeOneShift).hex() }}<br>
+                                ${{ id }}-darker: {{ shade(color.value, shadeTwoShift).hex() }}<br><br>
+                            </span>
+                        </div>
+
+                        <div v-if="activeTab === 'scss'">
+                            <span v-for="(gray, id) in grays" :key="id" class="whitespace-no-wrap">${{ id }}: {{ gray.value.hex() }};<br></span><br>
+
+                            <span v-for="(color, id) in colors" :key="id" class="whitespace-no-wrap">
+                                ${{ id }}-lighter: {{ tint(color.value, tintOneShift).hex() }};<br>
+                                ${{ id }}-light: {{ tint(color.value, tintTwoShift).hex() }};<br>
+                                ${{ id }}: {{ color.value.hex() }};<br>
+                                ${{ id }}-dark: {{ shade(color.value, shadeOneShift).hex() }};<br>
+                                ${{ id }}-darker: {{ shade(color.value, shadeTwoShift).hex() }};<br><br>
+                            </span>
+                        </div>
+                    </div>
+                </aside>
             </div>
         </div>
                 </div>
@@ -372,81 +439,7 @@
         </div>
     </div>
 
-    <!-- Code output below the viewport workspace -->
-    <section class="container mx-auto mb-8 px-4 pt-6 max-w-6xl">
-        <h2 class="text-lg font-bold mb-3">Generated code</h2>
-        <div class="flex flex-wrap items-center justify-between mb-2">
-            <div class="flex flex-wrap">
-                <span
-                    v-for="tab in tabs"
-                    :key="tab.id"
-                    class="cursor-pointer mr-2 px-2 py-1 rounded-t sm:px-4 sm:py-2 sm:text-base text-sm"
-                    role="tab"
-                    :class="{
-                        'bg-white text-gray-800': activeTab === tab.id && !isDarkMode,
-                        'bg-gray-800 text-gray-100': activeTab === tab.id && isDarkMode,
-                    }"
-                    @click="setActiveTab(tab.id)"
-                    v-text="tab.title"
-                ></span>
-            </div>
-
-            <button type="button"
-                class="inline-flex items-center px-3 py-1 mt-2 sm:mt-0 text-sm rounded"
-                :class="isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-white hover:bg-gray-100'"
-                @click="copyOutput"
-            >
-                <i class="fas mr-2" :class="copied ? 'fa-check' : 'fa-copy'"></i>
-                <span v-text="copied ? 'Copied!' : 'Copy to clipboard'"></span>
-            </button>
-        </div>
-
-        <div id="output"
-            class="rounded-b rounded-tr pt-8 px-4 pb-4 leading-tight text-sm relative"
-            :class="[
-                isDarkMode ? 'bg-gray-800' : 'bg-white',
-                { 'rounded-t': activeTab !== 'tailwind' },
-            ]"
-        >
-            <div v-if="activeTab === 'tailwind'" class="overflow-x-scroll">
-                <span v-for="(gray, id) in grays" :key="id" class="whitespace-no-wrap">'{{ id }}': '{{ gray.value.hex() }}',<br></span><br>
-
-                <span v-for="(color, id) in colors" :key="id" class="whitespace-no-wrap">
-                    '{{ id }}-lighter': '{{ tint(color.value, tintOneShift).hex() }}',<br>
-                    '{{ id }}-light': '{{ tint(color.value, tintTwoShift).hex() }}',<br>
-                    '{{ id }}': '{{ color.value.hex() }}',<br>
-                    '{{ id }}-dark': '{{ shade(color.value, shadeOneShift).hex() }}',<br>
-                    '{{ id }}-darker': '{{ shade(color.value, shadeTwoShift).hex() }}',<br><br>
-                </span>
-            </div>
-
-            <div v-if="activeTab === 'sass'" class="overflow-x-scroll">
-                <span v-for="(gray, id) in grays" :key="id" class="whitespace-no-wrap">${{ id }}: {{ gray.value.hex() }}<br></span><br>
-
-                <span v-for="(color, id) in colors" :key="id" class="whitespace-no-wrap">
-                    ${{ id }}-lighter: {{ tint(color.value, tintOneShift).hex() }}<br>
-                    ${{ id }}-light: {{ tint(color.value, tintTwoShift).hex() }}<br>
-                    ${{ id }}: {{ color.value.hex() }}<br>
-                    ${{ id }}-dark: {{ shade(color.value, shadeOneShift).hex() }}<br>
-                    ${{ id }}-darker: {{ shade(color.value, shadeTwoShift).hex() }}<br><br>
-                </span>
-            </div>
-
-            <div v-if="activeTab === 'scss'" class="overflow-x-scroll">
-                <span v-for="(gray, id) in grays" :key="id" class="whitespace-no-wrap">${{ id }}: {{ gray.value.hex() }};<br></span><br>
-
-                <span v-for="(color, id) in colors" :key="id" class="whitespace-no-wrap">
-                    ${{ id }}-lighter: {{ tint(color.value, tintOneShift).hex() }};<br>
-                    ${{ id }}-light: {{ tint(color.value, tintTwoShift).hex() }};<br>
-                    ${{ id }}: {{ color.value.hex() }};<br>
-                    ${{ id }}-dark: {{ shade(color.value, shadeOneShift).hex() }};<br>
-                    ${{ id }}-darker: {{ shade(color.value, shadeTwoShift).hex() }};<br><br>
-                </span>
-            </div>
-        </div>
-    </section>
-
-    <footer class="px-3 pb-6 text-center text-sm"
+    <footer class="px-3 py-4 text-center text-sm"
         :class="isDarkMode ? 'text-gray-400' : 'text-gray-600'"
     >
         Created by

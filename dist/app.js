@@ -17340,20 +17340,6 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
       positive: true,
       icon: 'fa-moon'
     }],
-    previewNavItems: [{
-      icon: 'fa-th-large',
-      label: 'Overview',
-      active: true
-    }, {
-      icon: 'fa-palette',
-      label: 'Palettes'
-    }, {
-      icon: 'fa-code',
-      label: 'Export'
-    }, {
-      icon: 'fa-sliders',
-      label: 'Settings'
-    }],
     previewActivity: [{
       time: 'Just now',
       title: 'Brand base updated',
@@ -17451,12 +17437,6 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     },
     previewHeroGradient: function previewHeroGradient() {
       return "linear-gradient(145deg, ".concat(this.tint(this.brand, this.tintTwoShift).hex(), " 0%, ").concat(this.previewBodyBackground, " 45%, ").concat(this.tint(this.colors.cta.value, this.tintOneShift).hex(), " 100%)");
-    },
-    previewSidebarBackground: function previewSidebarBackground() {
-      return this.isDarkMode ? this.grays.black.value.hex() : this.grays.white.value.hex();
-    },
-    previewSidebarActiveBackground: function previewSidebarActiveBackground() {
-      return this.tint(this.brand, this.tintTwoShift).hex();
     },
     outputText: function outputText() {
       var _this = this;

@@ -41,12 +41,6 @@ new Vue({
             { label: 'Gray ramp', value: '10', meta: 'Brand-tinted', positive: true, icon: 'fa-adjust' },
             { label: 'Preview modes', value: '2', meta: 'Light & dark', positive: true, icon: 'fa-moon' },
         ],
-        previewNavItems: [
-            { icon: 'fa-th-large', label: 'Overview', active: true },
-            { icon: 'fa-palette', label: 'Palettes' },
-            { icon: 'fa-code', label: 'Export' },
-            { icon: 'fa-sliders', label: 'Settings' },
-        ],
         previewActivity: [
             { time: 'Just now', title: 'Brand base updated', detail: 'Primary swatch recalculated across semantic colors.', tone: 'brand' },
             { time: '4m ago', title: 'Gray ramp shifted', detail: 'Neutral surfaces picked up a subtle brand cast.', tone: 'info' },
@@ -165,16 +159,6 @@ new Vue({
 
         previewHeroGradient() {
             return `linear-gradient(145deg, ${this.tint(this.brand, this.tintTwoShift).hex()} 0%, ${this.previewBodyBackground} 45%, ${this.tint(this.colors.cta.value, this.tintOneShift).hex()} 100%)`;
-        },
-
-        previewSidebarBackground() {
-            return this.isDarkMode
-                ? this.grays.black.value.hex()
-                : this.grays.white.value.hex();
-        },
-
-        previewSidebarActiveBackground() {
-            return this.tint(this.brand, this.tintTwoShift).hex();
         },
 
         outputText() {
