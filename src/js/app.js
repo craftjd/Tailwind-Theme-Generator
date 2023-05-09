@@ -15,9 +15,9 @@ new Vue({
         activeTab: 'tailwind',
         defaultBrandHex: '#6366f1',
         colorInputValue: '',
-        percentInputValue: '0.4',
-        grayPercentInputValue: '0.2',
-        ctaHueInputValue: '150',
+        percentInputValue: '0.65',
+        grayPercentInputValue: '0.12',
+        ctaHueInputValue: '',
         tintOneInputValue: '.1',
         tintTwoInputValue: '.3',
         shadeOneInputValue: '.55',
@@ -62,9 +62,11 @@ new Vue({
         },
 
         brand() {
-            return this.colorInputValue
+            const raw = this.colorInputValue
                 ? chroma(this.colorInputValue)
                 : chroma(this.defaultBrandHex);
+
+            return this.refineBrand(raw);
         },
 
         percent() {
@@ -76,7 +78,11 @@ new Vue({
         },
 
         ctaHueShift() {
-            return this.ctaHueInputValue;
+            if (this.ctaHueInputValue !== '') {
+                return this.ctaHueInputValue;
+            }
+
+            return Math.round((this.brand.get('hsl.h') + 35) % 360);
         },
 
         tintOneShift() {
@@ -226,23 +232,23 @@ new Vue({
                 },
                 cta: {
                     name: 'CTA',
-                    value: this.brand.set('hsl.h', +this.ctaHueShift),
+                    value: this.ctaColor(),
                 },
                 info: {
                     name: 'Info',
-                    value: chroma.mix('#3df', this.brand, this.percent, 'lab'),
+                    value: this.mixSemantic('#0ea5e9'),
                 },
                 warning: {
                     name: 'Warning',
-                    value: chroma.mix('#fd0', this.brand, this.percent, 'lab'),
+                    value: this.mixSemantic('#d97706'),
                 },
                 success: {
                     name: 'Success',
-                    value: chroma.mix('#3e4', this.brand, this.percent, 'lab'),
+                    value: this.mixSemantic('#059669'),
                 },
                 danger: {
                     name: 'Danger',
-                    value: chroma.mix('#f34', this.brand, this.percent, 'lab'),
+                    value: this.mixSemantic('#dc2626'),
                 },
             };
         },
@@ -296,7 +302,63 @@ new Vue({
         },
 
         getRandomColor() {
-            return chroma.random();
+            const hue = Math.floor(Math.random() * 360);
+            const sat = 0.42 + Math.random() * 0.18;
+            const light = 0.46 + Math.random() * 0.08;
+
+            return chroma.hsl(hue, sat, light);
+        },
+
+        refineBrand(color) {
+            if (!chroma.valid(color)) {
+                return chroma(this.defaultBrandHex);
+            }
+
+            let refined = chroma(color);
+            let sat = refined.get('hsl.s');
+            let light = refined.get('hsl.l');
+
+            if (sat > 0.72) {
+                sat = 0.66;
+            } else if (sat < 0.28) {
+                sat = 0.38;
+            }
+
+            if (light > 0.62) {
+                light = 0.54;
+            } else if (light < 0.30) {
+                light = 0.42;
+            }
+
+            return refined.set('hsl.s', sat).set('hsl.l', light);
+        },
+
+        ctaColor() {
+            if (this.ctaHueInputValue !== '') {
+                return this.refineBrand(
+                    chroma(this.brand).set('hsl.h', +this.ctaHueInputValue)
+                );
+            }
+
+            const brandSat = this.brand.get('hsl.s');
+            const brandLight = this.brand.get('hsl.l');
+
+            return chroma(this.brand)
+                .set('hsl.h', (this.brand.get('hsl.h') + 35) % 360)
+                .set('hsl.s', Math.min(brandSat * 1.05, 0.70))
+                .set('hsl.l', Math.max(brandLight - 0.05, 0.38));
+        },
+
+        mixSemantic(anchorHex) {
+            const mix = Math.min(parseFloat(this.percent) || 0.65, 0.85);
+            let result = chroma.mix(anchorHex, this.brand, mix, 'lab');
+            let sat = result.get('hsl.s');
+
+            if (sat > 0.68) {
+                result = result.set('hsl.s', sat * 0.88);
+            }
+
+            return result;
         },
 
         randomizeTheme() {

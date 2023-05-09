@@ -17282,9 +17282,9 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     activeTab: 'tailwind',
     defaultBrandHex: '#6366f1',
     colorInputValue: '',
-    percentInputValue: '0.4',
-    grayPercentInputValue: '0.2',
-    ctaHueInputValue: '150',
+    percentInputValue: '0.65',
+    grayPercentInputValue: '0.12',
+    ctaHueInputValue: '',
     tintOneInputValue: '.1',
     tintTwoInputValue: '.3',
     shadeOneInputValue: '.55',
@@ -17379,7 +17379,8 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
       return this.isDarkMode ? 'bg-gray-800 border border-gray-600' : 'bg-white border border-gray-300';
     },
     brand: function brand() {
-      return this.colorInputValue ? Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.colorInputValue) : Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.defaultBrandHex);
+      var raw = this.colorInputValue ? Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.colorInputValue) : Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.defaultBrandHex);
+      return this.refineBrand(raw);
     },
     percent: function percent() {
       return this.percentInputValue;
@@ -17388,7 +17389,10 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
       return this.grayPercentInputValue;
     },
     ctaHueShift: function ctaHueShift() {
-      return this.ctaHueInputValue;
+      if (this.ctaHueInputValue !== '') {
+        return this.ctaHueInputValue;
+      }
+      return Math.round((this.brand.get('hsl.h') + 35) % 360);
     },
     tintOneShift: function tintOneShift() {
       return this.tintOneInputValue;
@@ -17496,23 +17500,23 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
         },
         cta: {
           name: 'CTA',
-          value: this.brand.set('hsl.h', +this.ctaHueShift)
+          value: this.ctaColor()
         },
         info: {
           name: 'Info',
-          value: chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].mix('#3df', this.brand, this.percent, 'lab')
+          value: this.mixSemantic('#0ea5e9')
         },
         warning: {
           name: 'Warning',
-          value: chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].mix('#fd0', this.brand, this.percent, 'lab')
+          value: this.mixSemantic('#d97706')
         },
         success: {
           name: 'Success',
-          value: chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].mix('#3e4', this.brand, this.percent, 'lab')
+          value: this.mixSemantic('#059669')
         },
         danger: {
           name: 'Danger',
-          value: chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].mix('#f34', this.brand, this.percent, 'lab')
+          value: this.mixSemantic('#dc2626')
         }
       };
     },
@@ -17563,7 +17567,46 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
       localStorage.setItem('activeTab', tab);
     },
     getRandomColor: function getRandomColor() {
-      return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].random();
+      var hue = Math.floor(Math.random() * 360);
+      var sat = 0.42 + Math.random() * 0.18;
+      var light = 0.46 + Math.random() * 0.08;
+      return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].hsl(hue, sat, light);
+    },
+    refineBrand: function refineBrand(color) {
+      if (!chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].valid(color)) {
+        return Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.defaultBrandHex);
+      }
+      var refined = Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(color);
+      var sat = refined.get('hsl.s');
+      var light = refined.get('hsl.l');
+      if (sat > 0.72) {
+        sat = 0.66;
+      } else if (sat < 0.28) {
+        sat = 0.38;
+      }
+      if (light > 0.62) {
+        light = 0.54;
+      } else if (light < 0.30) {
+        light = 0.42;
+      }
+      return refined.set('hsl.s', sat).set('hsl.l', light);
+    },
+    ctaColor: function ctaColor() {
+      if (this.ctaHueInputValue !== '') {
+        return this.refineBrand(Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.brand).set('hsl.h', +this.ctaHueInputValue));
+      }
+      var brandSat = this.brand.get('hsl.s');
+      var brandLight = this.brand.get('hsl.l');
+      return Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.brand).set('hsl.h', (this.brand.get('hsl.h') + 35) % 360).set('hsl.s', Math.min(brandSat * 1.05, 0.70)).set('hsl.l', Math.max(brandLight - 0.05, 0.38));
+    },
+    mixSemantic: function mixSemantic(anchorHex) {
+      var mix = Math.min(parseFloat(this.percent) || 0.65, 0.85);
+      var result = chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].mix(anchorHex, this.brand, mix, 'lab');
+      var sat = result.get('hsl.s');
+      if (sat > 0.68) {
+        result = result.set('hsl.s', sat * 0.88);
+      }
+      return result;
     },
     randomizeTheme: function randomizeTheme() {
       this.colorInputValue = this.getRandomColor().hex();

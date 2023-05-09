@@ -129,10 +129,10 @@
                 </div>
 
                 <div class="mb-2 font-semibold">Theme colors</div>
-                <div class="flex overflow-x-auto pb-2 mb-3">
-                    <div v-for="color in colors" :key="color.name" class="flex-none w-10 mr-2">
+                <div class="flex flex-wrap -mx-1 mb-3">
+                    <div v-for="color in colors" :key="color.name" class="w-1/2 px-1 mb-3">
                         <div class="text-xs truncate mb-1" v-text="color.name"></div>
-                        <div class="flex flex-col h-10 rounded overflow-hidden border" :class="isDarkMode ? 'border-gray-600' : 'border-gray-300'">
+                        <div class="flex flex-col h-16 rounded overflow-hidden border" :class="isDarkMode ? 'border-gray-600' : 'border-gray-300'">
                             <span :style="{ backgroundColor: tint(color.value, tintOneShift).hex() }" class="h-1"></span>
                             <span :style="{ backgroundColor: tint(color.value, tintTwoShift).hex() }" class="h-1"></span>
                             <span :style="{ backgroundColor: color.value.hex() }" class="flex-1"></span>
