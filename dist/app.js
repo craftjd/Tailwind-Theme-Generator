@@ -17277,14 +17277,37 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     var savedTab = localStorage.getItem('activeTab');
     this.activeTab = savedTab ? savedTab : 'tailwind';
     this.isDarkMode = localStorage.getItem('isDarkMode') === 'true';
+    var savedHarmony = localStorage.getItem('harmonyMode');
+    if (savedHarmony) {
+      this.harmonyMode = savedHarmony;
+    }
   },
   data: {
     activeTab: 'tailwind',
     defaultBrandHex: '#6366f1',
     colorInputValue: '',
-    percentInputValue: '0.65',
-    grayPercentInputValue: '0.12',
-    ctaHueInputValue: '',
+    percentInputValue: '0.35',
+    grayPercentInputValue: '0.2',
+    harmonyMode: 'analogous',
+    harmonyModes: [{
+      id: 'monochromatic',
+      label: 'Monochromatic'
+    }, {
+      id: 'analogous',
+      label: 'Analogous'
+    }, {
+      id: 'triadic',
+      label: 'Triadic'
+    }, {
+      id: 'complementary',
+      label: 'Complementary'
+    }, {
+      id: 'split-complementary',
+      label: 'Split complementary'
+    }, {
+      id: 'achromatic',
+      label: 'Achromatic'
+    }],
     tintOneInputValue: '.1',
     tintTwoInputValue: '.3',
     shadeOneInputValue: '.55',
@@ -17305,7 +17328,7 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     previewFeatures: [{
       icon: 'fa-magic',
       title: 'Semantic harmony',
-      description: 'Info, success, and danger tones inherit your brand DNA automatically.'
+      description: 'Status colors stay in recognizable UI ranges with subtle theme influence.'
     }, {
       icon: 'fa-chart-line',
       title: 'Readable data viz',
@@ -17374,25 +17397,30 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     }],
     previewChartBars: [42, 68, 55, 84, 61, 92, 74]
   },
+  watch: {
+    harmonyMode: function harmonyMode(value) {
+      localStorage.setItem('harmonyMode', value);
+    }
+  },
   computed: {
     inputClass: function inputClass() {
       return this.isDarkMode ? 'bg-gray-800 border border-gray-600' : 'bg-white border border-gray-300';
     },
     brand: function brand() {
-      var raw = this.colorInputValue ? Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.colorInputValue) : Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.defaultBrandHex);
-      return this.refineBrand(raw);
+      if (this.colorInputValue && chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].valid(this.colorInputValue)) {
+        return Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.colorInputValue);
+      }
+      return Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.defaultBrandHex);
     },
-    percent: function percent() {
-      return this.percentInputValue;
+    themeInfluence: function themeInfluence() {
+      var value = parseFloat(this.percentInputValue);
+      if (isNaN(value)) {
+        return 0.35;
+      }
+      return Math.min(Math.max(value, 0), 1);
     },
     grayPercent: function grayPercent() {
       return this.grayPercentInputValue;
-    },
-    ctaHueShift: function ctaHueShift() {
-      if (this.ctaHueInputValue !== '') {
-        return this.ctaHueInputValue;
-      }
-      return Math.round((this.brand.get('hsl.h') + 35) % 360);
     },
     tintOneShift: function tintOneShift() {
       return this.tintOneInputValue;
@@ -17500,23 +17528,23 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
         },
         cta: {
           name: 'CTA',
-          value: this.ctaColor()
+          value: this.harmonyCtaColor()
         },
         info: {
           name: 'Info',
-          value: this.mixSemantic('#0ea5e9')
+          value: this.semanticColor('info')
         },
         warning: {
           name: 'Warning',
-          value: this.mixSemantic('#d97706')
+          value: this.semanticColor('warning')
         },
         success: {
           name: 'Success',
-          value: this.mixSemantic('#059669')
+          value: this.semanticColor('success')
         },
         danger: {
           name: 'Danger',
-          value: this.mixSemantic('#dc2626')
+          value: this.semanticColor('danger')
         }
       };
     },
@@ -17567,46 +17595,90 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
       localStorage.setItem('activeTab', tab);
     },
     getRandomColor: function getRandomColor() {
-      var hue = Math.floor(Math.random() * 360);
-      var sat = 0.42 + Math.random() * 0.18;
-      var light = 0.46 + Math.random() * 0.08;
-      return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].hsl(hue, sat, light);
+      return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].random();
     },
-    refineBrand: function refineBrand(color) {
-      if (!chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].valid(color)) {
-        return Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.defaultBrandHex);
-      }
-      var refined = Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(color);
-      var sat = refined.get('hsl.s');
-      var light = refined.get('hsl.l');
-      if (sat > 0.72) {
-        sat = 0.66;
-      } else if (sat < 0.28) {
-        sat = 0.38;
-      }
-      if (light > 0.62) {
-        light = 0.54;
-      } else if (light < 0.30) {
-        light = 0.42;
-      }
-      return refined.set('hsl.s', sat).set('hsl.l', light);
+    normalizeHue: function normalizeHue(hue) {
+      return (hue % 360 + 360) % 360;
     },
-    ctaColor: function ctaColor() {
-      if (this.ctaHueInputValue !== '') {
-        return this.refineBrand(Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.brand).set('hsl.h', +this.ctaHueInputValue));
-      }
+    shortestHueDelta: function shortestHueDelta(from, to) {
+      return (to - from + 540) % 360 - 180;
+    },
+    clamp: function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    },
+    semanticColor: function semanticColor(role) {
+      var bases = {
+        info: {
+          h: 205,
+          s: 0.70,
+          l: 0.48,
+          hMin: 195,
+          hMax: 215
+        },
+        warning: {
+          h: 38,
+          s: 0.82,
+          l: 0.50,
+          hMin: 30,
+          hMax: 46
+        },
+        success: {
+          h: 145,
+          s: 0.58,
+          l: 0.42,
+          hMin: 136,
+          hMax: 154
+        },
+        danger: {
+          h: 4,
+          s: 0.70,
+          l: 0.50,
+          hMin: 350,
+          hMax: 18
+        }
+      };
+      var base = bases[role];
+      var influence = this.themeInfluence;
+      var brandHue = this.brand.get('hsl.h');
       var brandSat = this.brand.get('hsl.s');
       var brandLight = this.brand.get('hsl.l');
-      return Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(this.brand).set('hsl.h', (this.brand.get('hsl.h') + 35) % 360).set('hsl.s', Math.min(brandSat * 1.05, 0.70)).set('hsl.l', Math.max(brandLight - 0.05, 0.38));
-    },
-    mixSemantic: function mixSemantic(anchorHex) {
-      var mix = Math.min(parseFloat(this.percent) || 0.65, 0.85);
-      var result = chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].mix(anchorHex, this.brand, mix, 'lab');
-      var sat = result.get('hsl.s');
-      if (sat > 0.68) {
-        result = result.set('hsl.s', sat * 0.88);
+      var maxHueShift = 10;
+      var hueShift = this.shortestHueDelta(base.h, brandHue) * influence * 0.12;
+      hueShift = this.clamp(hueShift, -maxHueShift, maxHueShift);
+      var hue = this.normalizeHue(base.h + hueShift);
+      if (role === 'danger') {
+        if (hue > 18 && hue < 350) {
+          hue = hueShift >= 0 ? 18 : 350;
+        }
+      } else {
+        hue = this.clamp(hue, base.hMin, base.hMax);
       }
-      return result;
+      var sat = base.s * (1 - influence * 0.4) + brandSat * (influence * 0.4);
+      sat = this.clamp(sat, base.s * 0.85, base.s * 1.08);
+      var light = base.l * (1 - influence * 0.2) + brandLight * (influence * 0.2);
+      light = this.clamp(light, 0.36, 0.56);
+      return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].hsl(hue, sat, light);
+    },
+    harmonyCtaColor: function harmonyCtaColor() {
+      var hue = this.brand.get('hsl.h');
+      var sat = this.brand.get('hsl.s');
+      var light = this.brand.get('hsl.l');
+      switch (this.harmonyMode) {
+        case 'monochromatic':
+          return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].hsl(hue, this.clamp(sat * 1.1, 0.45, 0.88), this.clamp(light - 0.1, 0.30, 0.52));
+        case 'analogous':
+          return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].hsl(this.normalizeHue(hue + 30), this.clamp(sat * 1.02, 0.42, 0.78), this.clamp(light - 0.05, 0.34, 0.54));
+        case 'triadic':
+          return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].hsl(this.normalizeHue(hue + 120), this.clamp(sat * 0.95, 0.40, 0.72), this.clamp(light - 0.03, 0.36, 0.54));
+        case 'complementary':
+          return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].hsl(this.normalizeHue(hue + 180), this.clamp(sat * 0.92, 0.38, 0.70), this.clamp(light - 0.03, 0.36, 0.54));
+        case 'split-complementary':
+          return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].hsl(this.normalizeHue(hue + 150), this.clamp(sat * 0.94, 0.38, 0.72), this.clamp(light - 0.03, 0.36, 0.54));
+        case 'achromatic':
+          return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].hsl(hue, 0, this.clamp(light > 0.55 ? 0.26 : 0.20, 0.16, 0.32));
+        default:
+          return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].hsl(this.normalizeHue(hue + 30), this.clamp(sat * 1.02, 0.42, 0.78), this.clamp(light - 0.05, 0.34, 0.54));
+      }
     },
     randomizeTheme: function randomizeTheme() {
       this.colorInputValue = this.getRandomColor().hex();
