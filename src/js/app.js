@@ -133,7 +133,7 @@ new Vue({
         previewHeadingColor() {
             return this.isDarkMode
                 ? this.tint(this.brand, this.tintTwoShift).hex()
-                : this.colors.brand.value.hex();
+                : this.shade(this.brand, this.shadeOneShift).hex();
         },
 
         previewTextColor() {
@@ -154,9 +154,9 @@ new Vue({
                 : this.grays.white.value.hex();
         },
 
-        previewBorderColor() {
+        previewDividerColor() {
             return this.isDarkMode
-                ? this.grays['gray-dark'].value.hex()
+                ? this.grays['gray-darker'].value.hex()
                 : this.grays['gray-lighter'].value.hex();
         },
 
@@ -172,16 +172,20 @@ new Vue({
                 : this.grays['gray-darker'].value.hex();
         },
 
+        previewBrandSurface() {
+            return this.tint(this.brand, this.tintOneShift).hex();
+        },
+
+        previewBrandSurfaceMid() {
+            return this.tint(this.brand, this.tintTwoShift).hex();
+        },
+
         previewInfoAlertBackground() {
-            return this.tint(this.colors.info.value, this.tintTwoShift).hex();
+            return this.tint(this.colors.info.value, this.tintOneShift).hex();
         },
 
         previewSuccessAlertBackground() {
-            return this.tint(this.colors.success.value, this.tintTwoShift).hex();
-        },
-
-        previewHeroGradient() {
-            return `linear-gradient(145deg, ${this.tint(this.brand, this.tintTwoShift).hex()} 0%, ${this.previewBodyBackground} 45%, ${this.tint(this.colors.cta.value, this.tintOneShift).hex()} 100%)`;
+            return this.tint(this.colors.success.value, this.tintOneShift).hex();
         },
 
         outputText() {
@@ -447,6 +451,39 @@ new Vue({
             };
 
             return colors[status] ? colors[status].hex() : this.colors.info.value.hex();
+        },
+
+        previewToneSurface(color) {
+            const value = typeof color === 'string' ? chroma(color) : color;
+
+            return this.tint(value, this.tintOneShift).hex();
+        },
+
+        previewToneSurfaceMid(color) {
+            const value = typeof color === 'string' ? chroma(color) : color;
+
+            return this.tint(value, this.tintTwoShift).hex();
+        },
+
+        previewToneText(color) {
+            const value = typeof color === 'string' ? chroma(color) : color;
+
+            return this.shade(value, this.shadeOneShift).hex();
+        },
+
+        previewToneMuted(color) {
+            const value = typeof color === 'string' ? chroma(color) : color;
+
+            return this.shade(value, this.shadeTwoShift).hex();
+        },
+
+        previewDeploymentBadgeStyle(status) {
+            const color = this.previewStatusColor(status);
+
+            return {
+                backgroundColor: this.previewToneSurfaceMid(color),
+                color: this.previewToneText(color),
+            };
         },
 
         copyOutput() {

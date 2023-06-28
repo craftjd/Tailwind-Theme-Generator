@@ -17441,7 +17441,7 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
       return this.isDarkMode ? this.grays['gray-darkest'].value.hex() : this.grays['gray-lightest'].value.hex();
     },
     previewHeadingColor: function previewHeadingColor() {
-      return this.isDarkMode ? this.tint(this.brand, this.tintTwoShift).hex() : this.colors.brand.value.hex();
+      return this.isDarkMode ? this.tint(this.brand, this.tintTwoShift).hex() : this.shade(this.brand, this.shadeOneShift).hex();
     },
     previewTextColor: function previewTextColor() {
       return this.isDarkMode ? this.grays['gray-light'].value.hex() : this.grays['gray-dark'].value.hex();
@@ -17452,8 +17452,8 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     previewCardBackground: function previewCardBackground() {
       return this.isDarkMode ? this.grays['gray-darker'].value.hex() : this.grays.white.value.hex();
     },
-    previewBorderColor: function previewBorderColor() {
-      return this.isDarkMode ? this.grays['gray-dark'].value.hex() : this.grays['gray-lighter'].value.hex();
+    previewDividerColor: function previewDividerColor() {
+      return this.isDarkMode ? this.grays['gray-darker'].value.hex() : this.grays['gray-lighter'].value.hex();
     },
     previewChromeBackground: function previewChromeBackground() {
       return this.isDarkMode ? this.grays.black.value.hex() : this.grays['gray-lighter'].value.hex();
@@ -17461,14 +17461,17 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     previewFooterBackground: function previewFooterBackground() {
       return this.isDarkMode ? this.grays.black.value.hex() : this.grays['gray-darker'].value.hex();
     },
+    previewBrandSurface: function previewBrandSurface() {
+      return this.tint(this.brand, this.tintOneShift).hex();
+    },
+    previewBrandSurfaceMid: function previewBrandSurfaceMid() {
+      return this.tint(this.brand, this.tintTwoShift).hex();
+    },
     previewInfoAlertBackground: function previewInfoAlertBackground() {
-      return this.tint(this.colors.info.value, this.tintTwoShift).hex();
+      return this.tint(this.colors.info.value, this.tintOneShift).hex();
     },
     previewSuccessAlertBackground: function previewSuccessAlertBackground() {
-      return this.tint(this.colors.success.value, this.tintTwoShift).hex();
-    },
-    previewHeroGradient: function previewHeroGradient() {
-      return "linear-gradient(145deg, ".concat(this.tint(this.brand, this.tintTwoShift).hex(), " 0%, ").concat(this.previewBodyBackground, " 45%, ").concat(this.tint(this.colors.cta.value, this.tintOneShift).hex(), " 100%)");
+      return this.tint(this.colors.success.value, this.tintOneShift).hex();
     },
     outputText: function outputText() {
       var _this = this;
@@ -17702,6 +17705,29 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
         info: this.colors.info.value
       };
       return colors[status] ? colors[status].hex() : this.colors.info.value.hex();
+    },
+    previewToneSurface: function previewToneSurface(color) {
+      var value = typeof color === 'string' ? Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(color) : color;
+      return this.tint(value, this.tintOneShift).hex();
+    },
+    previewToneSurfaceMid: function previewToneSurfaceMid(color) {
+      var value = typeof color === 'string' ? Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(color) : color;
+      return this.tint(value, this.tintTwoShift).hex();
+    },
+    previewToneText: function previewToneText(color) {
+      var value = typeof color === 'string' ? Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(color) : color;
+      return this.shade(value, this.shadeOneShift).hex();
+    },
+    previewToneMuted: function previewToneMuted(color) {
+      var value = typeof color === 'string' ? Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(color) : color;
+      return this.shade(value, this.shadeTwoShift).hex();
+    },
+    previewDeploymentBadgeStyle: function previewDeploymentBadgeStyle(status) {
+      var color = this.previewStatusColor(status);
+      return {
+        backgroundColor: this.previewToneSurfaceMid(color),
+        color: this.previewToneText(color)
+      };
     },
     copyOutput: function copyOutput() {
       var _this2 = this;
