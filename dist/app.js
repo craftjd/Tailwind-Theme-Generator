@@ -17291,22 +17291,28 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     harmonyMode: 'analogous',
     harmonyModes: [{
       id: 'monochromatic',
-      label: 'Monochromatic'
+      label: 'Monochromatic',
+      hint: 'Same hue — darker, richer CTA'
     }, {
       id: 'analogous',
-      label: 'Analogous'
+      label: 'Analogous',
+      hint: 'Neighbouring hue (+30°)'
     }, {
       id: 'triadic',
-      label: 'Triadic'
+      label: 'Triadic',
+      hint: 'Balanced accent (+120°)'
     }, {
       id: 'complementary',
-      label: 'Complementary'
+      label: 'Complementary',
+      hint: 'Opposite hue (+180°)'
     }, {
       id: 'split-complementary',
-      label: 'Split complementary'
+      label: 'Split complementary',
+      hint: 'Split opposite (+150°)'
     }, {
       id: 'achromatic',
-      label: 'Achromatic'
+      label: 'Achromatic',
+      hint: 'Neutral gray from brand lightness'
     }],
     tintOneInputValue: '.1',
     tintTwoInputValue: '.3',
@@ -17423,19 +17429,22 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
       return this.grayPercentInputValue;
     },
     tintOneShift: function tintOneShift() {
-      return this.tintOneInputValue;
+      return this.shiftValue(this.tintOneInputValue, 0.1);
     },
     tintTwoShift: function tintTwoShift() {
-      return this.tintTwoInputValue;
+      return this.shiftValue(this.tintTwoInputValue, 0.3);
     },
     shadeOneShift: function shadeOneShift() {
-      return this.shadeOneInputValue;
+      return this.shiftValue(this.shadeOneInputValue, 0.55);
     },
     shadeTwoShift: function shadeTwoShift() {
-      return this.shadeTwoInputValue;
+      return this.shiftValue(this.shadeTwoInputValue, 0.3);
     },
-    previewHeaderBackground: function previewHeaderBackground() {
-      return this.isDarkMode ? this.shade(this.brand, this.shadeOneShift).hex() : this.colors.brand.value.hex();
+    activeHarmonyMode: function activeHarmonyMode() {
+      var _this = this;
+      return this.harmonyModes.find(function (mode) {
+        return mode.id === _this.harmonyMode;
+      }) || this.harmonyModes[1];
     },
     previewBodyBackground: function previewBodyBackground() {
       return this.isDarkMode ? this.grays['gray-darkest'].value.hex() : this.grays['gray-lightest'].value.hex();
@@ -17458,9 +17467,6 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     previewChromeBackground: function previewChromeBackground() {
       return this.isDarkMode ? this.grays.black.value.hex() : this.grays['gray-lighter'].value.hex();
     },
-    previewFooterBackground: function previewFooterBackground() {
-      return this.isDarkMode ? this.grays.black.value.hex() : this.grays['gray-darker'].value.hex();
-    },
     previewBrandSurface: function previewBrandSurface() {
       return this.tint(this.brand, this.tintOneShift).hex();
     },
@@ -17470,54 +17476,54 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     previewInfoAlertBackground: function previewInfoAlertBackground() {
       return this.tint(this.colors.info.value, this.tintOneShift).hex();
     },
-    previewSuccessAlertBackground: function previewSuccessAlertBackground() {
-      return this.tint(this.colors.success.value, this.tintOneShift).hex();
+    previewCtaTextColor: function previewCtaTextColor() {
+      return this.contrastTextColor(this.colors.cta.value);
     },
     outputText: function outputText() {
-      var _this = this;
+      var _this2 = this;
       var lines = [];
       if (this.activeTab === 'tailwind') {
         Object.keys(this.grays).forEach(function (id) {
-          lines.push("'".concat(id, "': '").concat(_this.grays[id].value.hex(), "',"));
+          lines.push("'".concat(id, "': '").concat(_this2.grays[id].value.hex(), "',"));
         });
         lines.push('');
         Object.keys(this.colors).forEach(function (id) {
-          var color = _this.colors[id].value;
-          lines.push("'".concat(id, "-lighter': '").concat(_this.tint(color, _this.tintOneShift).hex(), "',"));
-          lines.push("'".concat(id, "-light': '").concat(_this.tint(color, _this.tintTwoShift).hex(), "',"));
+          var color = _this2.colors[id].value;
+          lines.push("'".concat(id, "-lighter': '").concat(_this2.tint(color, _this2.tintOneShift).hex(), "',"));
+          lines.push("'".concat(id, "-light': '").concat(_this2.tint(color, _this2.tintTwoShift).hex(), "',"));
           lines.push("'".concat(id, "': '").concat(color.hex(), "',"));
-          lines.push("'".concat(id, "-dark': '").concat(_this.shade(color, _this.shadeOneShift).hex(), "',"));
-          lines.push("'".concat(id, "-darker': '").concat(_this.shade(color, _this.shadeTwoShift).hex(), "',"));
+          lines.push("'".concat(id, "-dark': '").concat(_this2.shade(color, _this2.shadeOneShift).hex(), "',"));
+          lines.push("'".concat(id, "-darker': '").concat(_this2.shade(color, _this2.shadeTwoShift).hex(), "',"));
           lines.push('');
         });
       }
       if (this.activeTab === 'sass') {
         Object.keys(this.grays).forEach(function (id) {
-          lines.push("$".concat(id, ": ").concat(_this.grays[id].value.hex()));
+          lines.push("$".concat(id, ": ").concat(_this2.grays[id].value.hex()));
         });
         lines.push('');
         Object.keys(this.colors).forEach(function (id) {
-          var color = _this.colors[id].value;
-          lines.push("$".concat(id, "-lighter: ").concat(_this.tint(color, _this.tintOneShift).hex()));
-          lines.push("$".concat(id, "-light: ").concat(_this.tint(color, _this.tintTwoShift).hex()));
+          var color = _this2.colors[id].value;
+          lines.push("$".concat(id, "-lighter: ").concat(_this2.tint(color, _this2.tintOneShift).hex()));
+          lines.push("$".concat(id, "-light: ").concat(_this2.tint(color, _this2.tintTwoShift).hex()));
           lines.push("$".concat(id, ": ").concat(color.hex()));
-          lines.push("$".concat(id, "-dark: ").concat(_this.shade(color, _this.shadeOneShift).hex()));
-          lines.push("$".concat(id, "-darker: ").concat(_this.shade(color, _this.shadeTwoShift).hex()));
+          lines.push("$".concat(id, "-dark: ").concat(_this2.shade(color, _this2.shadeOneShift).hex()));
+          lines.push("$".concat(id, "-darker: ").concat(_this2.shade(color, _this2.shadeTwoShift).hex()));
           lines.push('');
         });
       }
       if (this.activeTab === 'scss') {
         Object.keys(this.grays).forEach(function (id) {
-          lines.push("$".concat(id, ": ").concat(_this.grays[id].value.hex(), ";"));
+          lines.push("$".concat(id, ": ").concat(_this2.grays[id].value.hex(), ";"));
         });
         lines.push('');
         Object.keys(this.colors).forEach(function (id) {
-          var color = _this.colors[id].value;
-          lines.push("$".concat(id, "-lighter: ").concat(_this.tint(color, _this.tintOneShift).hex(), ";"));
-          lines.push("$".concat(id, "-light: ").concat(_this.tint(color, _this.tintTwoShift).hex(), ";"));
+          var color = _this2.colors[id].value;
+          lines.push("$".concat(id, "-lighter: ").concat(_this2.tint(color, _this2.tintOneShift).hex(), ";"));
+          lines.push("$".concat(id, "-light: ").concat(_this2.tint(color, _this2.tintTwoShift).hex(), ";"));
           lines.push("$".concat(id, ": ").concat(color.hex(), ";"));
-          lines.push("$".concat(id, "-dark: ").concat(_this.shade(color, _this.shadeOneShift).hex(), ";"));
-          lines.push("$".concat(id, "-darker: ").concat(_this.shade(color, _this.shadeTwoShift).hex(), ";"));
+          lines.push("$".concat(id, "-dark: ").concat(_this2.shade(color, _this2.shadeOneShift).hex(), ";"));
+          lines.push("$".concat(id, "-darker: ").concat(_this2.shade(color, _this2.shadeTwoShift).hex(), ";"));
           lines.push('');
         });
       }
@@ -17598,7 +17604,16 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
       localStorage.setItem('activeTab', tab);
     },
     getRandomColor: function getRandomColor() {
-      return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].random();
+      var hue = Math.floor(Math.random() * 360);
+      return chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].hsl(hue, 0.55, 0.5);
+    },
+    shiftValue: function shiftValue(value, fallback) {
+      var parsed = parseFloat(value);
+      return isNaN(parsed) ? fallback : parsed;
+    },
+    contrastTextColor: function contrastTextColor(background) {
+      var color = typeof background === 'string' ? Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(background) : Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(background);
+      return color.luminance() > 0.45 ? this.shade(color, 0.55).hex() : '#ffffff';
     },
     normalizeHue: function normalizeHue(hue) {
       return (hue % 360 + 360) % 360;
@@ -17730,11 +17745,11 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
       };
     },
     copyOutput: function copyOutput() {
-      var _this2 = this;
+      var _this3 = this;
       var text = this.outputText;
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(function () {
-          _this2.showCopiedFeedback();
+          _this3.showCopiedFeedback();
         });
         return;
       }
@@ -17750,13 +17765,13 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
       this.showCopiedFeedback();
     },
     showCopiedFeedback: function showCopiedFeedback() {
-      var _this3 = this;
+      var _this4 = this;
       this.copied = true;
       if (this.copyFeedbackTimeout) {
         clearTimeout(this.copyFeedbackTimeout);
       }
       this.copyFeedbackTimeout = setTimeout(function () {
-        _this3.copied = false;
+        _this4.copied = false;
       }, 2000);
     }
   }

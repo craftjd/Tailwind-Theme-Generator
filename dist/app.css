@@ -20422,6 +20422,33 @@ video {
   animation: bounce 1s infinite;
 }
 
+/* Tailwind v1 has no fractional spacing; used for tint/shade bands in swatch stacks */
+
+.swatch-band {
+  height: 8px;
+  flex-shrink: 0;
+}
+
+.swatch-stack {
+  height: 5rem;
+}
+
+.swatch-stack-sm {
+  height: 3rem;
+}
+
+@media (min-width: 1024px) {
+  .w-sidebar {
+    width: 18rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .w-sidebar-wide {
+    width: 20rem;
+  }
+}
+
 @media (min-width: 640px) {
   .sm\:container {
     width: 100%;

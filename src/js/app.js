@@ -24,12 +24,12 @@ new Vue({
         grayPercentInputValue: '0.2',
         harmonyMode: 'analogous',
         harmonyModes: [
-            { id: 'monochromatic', label: 'Monochromatic' },
-            { id: 'analogous', label: 'Analogous' },
-            { id: 'triadic', label: 'Triadic' },
-            { id: 'complementary', label: 'Complementary' },
-            { id: 'split-complementary', label: 'Split complementary' },
-            { id: 'achromatic', label: 'Achromatic' },
+            { id: 'monochromatic', label: 'Monochromatic', hint: 'Same hue — darker, richer CTA' },
+            { id: 'analogous', label: 'Analogous', hint: 'Neighbouring hue (+30°)' },
+            { id: 'triadic', label: 'Triadic', hint: 'Balanced accent (+120°)' },
+            { id: 'complementary', label: 'Complementary', hint: 'Opposite hue (+180°)' },
+            { id: 'split-complementary', label: 'Split complementary', hint: 'Split opposite (+150°)' },
+            { id: 'achromatic', label: 'Achromatic', hint: 'Neutral gray from brand lightness' },
         ],
         tintOneInputValue: '.1',
         tintTwoInputValue: '.3',
@@ -103,25 +103,24 @@ new Vue({
         },
 
         tintOneShift() {
-            return this.tintOneInputValue;
+            return this.shiftValue(this.tintOneInputValue, 0.1);
         },
 
         tintTwoShift() {
-            return this.tintTwoInputValue;
+            return this.shiftValue(this.tintTwoInputValue, 0.3);
         },
 
         shadeOneShift() {
-            return this.shadeOneInputValue;
+            return this.shiftValue(this.shadeOneInputValue, 0.55);
         },
 
         shadeTwoShift() {
-            return this.shadeTwoInputValue;
+            return this.shiftValue(this.shadeTwoInputValue, 0.3);
         },
 
-        previewHeaderBackground() {
-            return this.isDarkMode
-                ? this.shade(this.brand, this.shadeOneShift).hex()
-                : this.colors.brand.value.hex();
+        activeHarmonyMode() {
+            return this.harmonyModes.find((mode) => mode.id === this.harmonyMode)
+                || this.harmonyModes[1];
         },
 
         previewBodyBackground() {
@@ -166,12 +165,6 @@ new Vue({
                 : this.grays['gray-lighter'].value.hex();
         },
 
-        previewFooterBackground() {
-            return this.isDarkMode
-                ? this.grays.black.value.hex()
-                : this.grays['gray-darker'].value.hex();
-        },
-
         previewBrandSurface() {
             return this.tint(this.brand, this.tintOneShift).hex();
         },
@@ -184,8 +177,8 @@ new Vue({
             return this.tint(this.colors.info.value, this.tintOneShift).hex();
         },
 
-        previewSuccessAlertBackground() {
-            return this.tint(this.colors.success.value, this.tintOneShift).hex();
+        previewCtaTextColor() {
+            return this.contrastTextColor(this.colors.cta.value);
         },
 
         outputText() {
@@ -323,7 +316,23 @@ new Vue({
         },
 
         getRandomColor() {
-            return chroma.random();
+            const hue = Math.floor(Math.random() * 360);
+
+            return chroma.hsl(hue, 0.55, 0.5);
+        },
+
+        shiftValue(value, fallback) {
+            const parsed = parseFloat(value);
+
+            return isNaN(parsed) ? fallback : parsed;
+        },
+
+        contrastTextColor(background) {
+            const color = typeof background === 'string' ? chroma(background) : chroma(background);
+
+            return color.luminance() > 0.45
+                ? this.shade(color, 0.55).hex()
+                : '#ffffff';
         },
 
         normalizeHue(hue) {
