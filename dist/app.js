@@ -17331,77 +17331,73 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
       id: 'scss',
       title: 'SCSS'
     }],
-    previewFeatures: [{
-      icon: 'fa-magic',
-      title: 'Semantic harmony',
-      description: 'Status colors stay in recognizable UI ranges with subtle theme influence.'
+    previewSurfaces: [{
+      label: 'Ambient',
+      desc: 'Full-bleed background',
+      level: 0
     }, {
-      icon: 'fa-chart-line',
-      title: 'Readable data viz',
-      description: 'Charts and metrics stay legible in light and dark surfaces.'
+      label: 'Raised',
+      desc: 'Panels and sheets',
+      level: 1
     }, {
-      icon: 'fa-shield-alt',
-      title: 'Accessible pairs',
-      description: 'Text, borders, and fills are tuned for everyday UI density.'
+      label: 'Focused',
+      desc: 'Modals and command',
+      level: 2
     }],
-    previewMetrics: [{
-      label: 'Contrast score',
-      value: '94',
-      meta: '+6 this week',
-      positive: true,
-      icon: 'fa-universal-access'
+    previewIntents: [{
+      role: 'brand',
+      label: 'Navigation anchor',
+      detail: 'Identity + wayfinding chrome'
     }, {
-      label: 'Active tokens',
-      value: '128',
-      meta: 'All formats',
-      positive: true,
-      icon: 'fa-layer-group'
+      role: 'cta',
+      label: 'Commit action',
+      detail: 'Primary forward motion'
     }, {
-      label: 'Gray ramp',
-      value: '10',
-      meta: 'Brand-tinted',
-      positive: true,
-      icon: 'fa-adjust'
+      role: 'info',
+      label: 'System signal',
+      detail: 'Neutral contextual feedback'
     }, {
-      label: 'Preview modes',
-      value: '2',
-      meta: 'Light & dark',
-      positive: true,
-      icon: 'fa-moon'
+      role: 'success',
+      label: 'Confirmed state',
+      detail: 'Completed hand-offs'
+    }, {
+      role: 'warning',
+      label: 'Caution state',
+      detail: 'Recoverable friction'
+    }, {
+      role: 'danger',
+      label: 'Critical state',
+      detail: 'Blocking interruption'
     }],
-    previewActivity: [{
-      time: 'Just now',
-      title: 'Brand base updated',
-      detail: 'Primary swatch recalculated across semantic colors.',
+    previewContexts: [{
+      name: 'Spatial shell',
+      status: 'Live',
       tone: 'brand'
     }, {
-      time: '4m ago',
-      title: 'Gray ramp shifted',
-      detail: 'Neutral surfaces picked up a subtle brand cast.',
+      name: 'Agent panel',
+      status: 'Linked',
       tone: 'info'
     }, {
-      time: '12m ago',
-      title: 'Export ready',
-      detail: 'Tailwind, SASS, and SCSS outputs are in sync.',
+      name: 'Wearable',
+      status: 'Queued',
+      tone: 'warning'
+    }],
+    previewFragments: [{
+      type: 'command',
+      text: 'Remap success tone +4% saturation…',
+      icon: 'fa-terminal'
+    }, {
+      type: 'signal',
+      text: 'Token graph synced across 3 contexts.',
       tone: 'success'
-    }],
-    previewDeployments: [{
-      name: 'Marketing site',
-      env: 'Production',
-      status: 'success',
-      progress: '100%'
     }, {
-      name: 'Design system',
-      env: 'Staging',
-      status: 'warning',
-      progress: '68%'
-    }, {
-      name: 'Mobile app',
-      env: 'Review',
-      status: 'brand',
-      progress: 'Draft'
+      type: 'thread',
+      title: 'Surface refresh',
+      body: 'Ambient layer luminance nudged.',
+      meta: 'now',
+      tone: 'brand'
     }],
-    previewChartBars: [42, 68, 55, 84, 61, 92, 74]
+    previewSignalBars: [28, 44, 36, 52, 40, 48, 38, 46, 34]
   },
   watch: {
     harmonyMode: function harmonyMode(value) {
@@ -17410,7 +17406,10 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
   },
   computed: {
     inputClass: function inputClass() {
-      return this.isDarkMode ? 'bg-gray-800 border border-gray-600' : 'bg-white border border-gray-300';
+      return this.isDarkMode ? 'input-surface input-surface-dark bg-gray-800 text-gray-100' : 'input-surface bg-white text-gray-800';
+    },
+    controlSurfaceClass: function controlSurfaceClass() {
+      return this.isDarkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-800';
     },
     brand: function brand() {
       if (this.colorInputValue && chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"].valid(this.colorInputValue)) {
@@ -17464,17 +17463,11 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     previewDividerColor: function previewDividerColor() {
       return this.isDarkMode ? this.grays['gray-darker'].value.hex() : this.grays['gray-lighter'].value.hex();
     },
-    previewChromeBackground: function previewChromeBackground() {
-      return this.isDarkMode ? this.grays.black.value.hex() : this.grays['gray-lighter'].value.hex();
-    },
     previewBrandSurface: function previewBrandSurface() {
       return this.tint(this.brand, this.tintOneShift).hex();
     },
     previewBrandSurfaceMid: function previewBrandSurfaceMid() {
       return this.tint(this.brand, this.tintTwoShift).hex();
-    },
-    previewInfoAlertBackground: function previewInfoAlertBackground() {
-      return this.tint(this.colors.info.value, this.tintOneShift).hex();
     },
     previewCtaTextColor: function previewCtaTextColor() {
       return this.contrastTextColor(this.colors.cta.value);
@@ -17711,16 +17704,6 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
       this.isDarkMode = !this.isDarkMode;
       localStorage.setItem('isDarkMode', this.isDarkMode);
     },
-    previewStatusColor: function previewStatusColor(status) {
-      var colors = {
-        success: this.colors.success.value,
-        warning: this.colors.warning.value,
-        danger: this.colors.danger.value,
-        brand: this.colors.brand.value,
-        info: this.colors.info.value
-      };
-      return colors[status] ? colors[status].hex() : this.colors.info.value.hex();
-    },
     previewToneSurface: function previewToneSurface(color) {
       var value = typeof color === 'string' ? Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(color) : color;
       return this.tint(value, this.tintOneShift).hex();
@@ -17737,10 +17720,25 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
       var value = typeof color === 'string' ? Object(chroma_js__WEBPACK_IMPORTED_MODULE_1__["default"])(color) : color;
       return this.shade(value, this.shadeTwoShift).hex();
     },
-    previewDeploymentBadgeStyle: function previewDeploymentBadgeStyle(status) {
-      var color = this.previewStatusColor(status);
+    previewIntentColor: function previewIntentColor(role) {
+      if (this.colors[role]) {
+        return this.colors[role].value;
+      }
+      return this.colors.brand.value;
+    },
+    previewSurfaceBackground: function previewSurfaceBackground(level) {
+      if (level === 0) {
+        return this.previewBodyBackground;
+      }
+      if (level === 1) {
+        return this.previewCardBackground;
+      }
+      return this.previewBrandSurface;
+    },
+    previewContextPillStyle: function previewContextPillStyle(tone) {
+      var color = this.previewIntentColor(tone);
       return {
-        backgroundColor: this.previewToneSurfaceMid(color),
+        backgroundColor: this.previewToneSurface(color),
         color: this.previewToneText(color)
       };
     },

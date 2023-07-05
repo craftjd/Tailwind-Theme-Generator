@@ -103,8 +103,8 @@
                 </div>
 
                 <button type="button"
-                    class="w-full text-left px-2 py-1 mb-3 rounded text-sm font-semibold"
-                    :class="isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-100'"
+                    class="w-full text-left px-2 py-1 mb-3 rounded text-sm font-semibold input-surface"
+                    :class="controlSurfaceClass"
                     @click="showAdvancedShifts = !showAdvancedShifts"
                 >
                     <i class="fas mr-1" :class="showAdvancedShifts ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
@@ -138,7 +138,7 @@
                 <div class="flex flex-wrap -mx-1 mb-3">
                     <div v-for="color in colors" :key="color.name" class="w-1/2 px-1 mb-3">
                         <div class="text-xs truncate mb-1" v-text="color.name"></div>
-                        <div class="flex flex-col swatch-stack rounded overflow-hidden" :class="isDarkMode ? 'border border-gray-600' : 'border border-gray-300'">
+                        <div class="flex flex-col swatch-stack rounded overflow-hidden">
                             <span class="swatch-band" :style="{ backgroundColor: tint(color.value, tintOneShift).hex() }"></span>
                             <span class="swatch-band" :style="{ backgroundColor: tint(color.value, tintTwoShift).hex() }"></span>
                             <span class="flex-1 min-h-0" :style="{ backgroundColor: color.value.hex() }"></span>
@@ -149,7 +149,7 @@
                 </div>
 
                 <div class="mb-1 font-semibold">Grays</div>
-                <div class="flex h-12 rounded overflow-hidden mb-1" :class="isDarkMode ? 'border border-gray-600' : 'border border-gray-300'">
+                <div class="flex h-12 rounded overflow-hidden mb-1">
                     <div
                         v-for="gray in grays"
                         :key="gray.name"
@@ -178,111 +178,162 @@
                 </div>
 
                 <div class="flex-1 overflow-hidden p-3" style="min-height: 0;">
-                    <div class="rounded-lg overflow-hidden shadow-lg font-sans h-full flex flex-col">
-                        <div class="flex-none flex items-center px-3 py-2" :style="{ backgroundColor: previewChromeBackground }">
-                            <span class="w-2 h-2 rounded-full mr-1" :style="{ backgroundColor: previewToneSurfaceMid(colors.danger.value) }"></span>
-                            <span class="w-2 h-2 rounded-full mr-1" :style="{ backgroundColor: previewToneSurfaceMid(colors.warning.value) }"></span>
-                            <span class="w-2 h-2 rounded-full mr-2" :style="{ backgroundColor: previewToneSurfaceMid(colors.success.value) }"></span>
-                            <div class="flex-1 text-center text-xs py-1 rounded px-2"
-                                :style="{ backgroundColor: previewCardBackground, color: previewMutedTextColor }">
-                                palette.studio / theme-lab
+                    <div class="rounded-lg overflow-hidden font-sans h-full flex flex-col relative" :style="{ backgroundColor: previewBodyBackground }">
+                        <!-- App shell -->
+                        <div class="flex-none flex items-center justify-between px-4 py-2"
+                            :style="{ backgroundColor: previewCardBackground, boxShadow: 'inset 0 -1px 0 ' + previewDividerColor }">
+                            <div class="flex items-center">
+                                <span class="w-2 h-2 rounded-full mr-2" :style="{ backgroundColor: colors.success.value.hex() }"></span>
+                                <span class="preview-mono-label" :style="{ color: previewMutedTextColor }">ctx://token-lab</span>
                             </div>
+                            <span class="preview-mono-label" :style="{ color: previewToneText(colors.brand.value) }">live sync</span>
                         </div>
 
-                        <div class="flex flex-col md:flex-row flex-1 overflow-hidden" :style="{ backgroundColor: previewBodyBackground, minHeight: 0 }">
+                        <div class="flex flex-col md:flex-row flex-1 overflow-hidden" style="min-height: 0;">
                             <div class="flex-1 min-w-0 flex flex-col overflow-hidden">
-                                <div class="flex-none flex items-center justify-between px-4 py-3 border-b"
-                                    :style="{ borderColor: previewDividerColor, backgroundColor: previewCardBackground }">
-                                    <div class="text-xs md:text-sm" :style="{ color: previewMutedTextColor }">
-                                        Themes <span class="mx-1 opacity-50">/</span>
-                                        <span class="font-semibold" :style="{ color: previewHeadingColor }">Live workspace</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <span class="w-8 h-8 rounded-full flex items-center justify-center mr-2 relative"
-                                            :style="{ backgroundColor: previewToneSurface(colors.info.value), color: previewToneText(colors.info.value) }">
-                                            <i class="fas fa-bell text-xs"></i>
-                                            <span class="absolute top-0 right-0 w-2 h-2 rounded-full"
-                                                :style="{ backgroundColor: colors.danger.value.hex() }"></span>
-                                        </span>
-                                        <span class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
-                                            :style="{ backgroundColor: colors.cta.value.hex(), color: previewCtaTextColor }">YOU</span>
-                                    </div>
+                                <!-- Context strip -->
+                                <div class="flex-none px-4 py-3 flex flex-wrap items-center"
+                                    :style="{ backgroundColor: previewCardBackground }">
+                                    <span class="preview-mono-label mr-2 mb-1" :style="{ color: previewMutedTextColor }">Linked</span>
+                                    <span v-for="ctx in previewContexts" :key="ctx.name"
+                                        class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold mr-2 mb-1"
+                                        :style="previewContextPillStyle(ctx.tone)">
+                                        <span class="preview-dot-sm rounded-full mr-2" :style="{ backgroundColor: previewIntentColor(ctx.tone).hex() }"></span>
+                                        <span v-text="ctx.name"></span>
+                                        <span class="ml-1 opacity-75 font-normal" v-text="ctx.status"></span>
+                                    </span>
                                 </div>
 
-                                <div class="flex-1 overflow-y-auto p-4 md:p-6" :style="{ backgroundColor: previewBodyBackground, minHeight: 0 }">
-                                    <div class="rounded-lg p-4 md:p-6 mb-4" :style="{ backgroundColor: previewCardBackground }">
-                                        <div class="flex flex-wrap items-start justify-between mb-4">
-                                            <div class="max-w-lg">
-                                                <span class="inline-block px-2 py-1 rounded-full text-xs font-semibold mb-2"
-                                                    :style="{ backgroundColor: previewToneSurfaceMid(colors.success.value), color: previewToneText(colors.success.value) }">
-                                                    Theme synced
-                                                </span>
-                                                <h3 class="text-xl md:text-2xl font-bold leading-tight mb-2"
-                                                    :style="{ color: previewHeadingColor }">
-                                                    Your palette, ready to ship
-                                                </h3>
-                                                <p class="text-sm leading-normal" :style="{ color: previewTextColor }">
-                                                    Surfaces use soft tints; actions and status markers carry the saturated tones.
-                                                </p>
+                                <div class="flex-1 overflow-y-auto p-4 md:p-5" style="min-height: 0;">
+                                    <!-- Hero -->
+                                    <div class="mb-5 relative">
+                                        <div class="absolute top-0 left-0 preview-accent-rail rounded"
+                                            :style="{ backgroundColor: colors.brand.value.hex() }"></div>
+                                        <div class="pl-4">
+                                            <span class="preview-mono-label block mb-2" :style="{ color: previewMutedTextColor }">Design context</span>
+                                            <h3 class="text-lg md:text-xl font-bold leading-tight mb-1"
+                                                :style="{ color: previewHeadingColor }">
+                                                Adaptive token surface
+                                            </h3>
+                                            <p class="text-sm leading-normal max-w-md" :style="{ color: previewTextColor }">
+                                                Tints carry ambient UI. Base tones mark intent. Harmony drives the commit color.
+                                            </p>
+                                            <div class="flex flex-wrap items-center mt-3">
+                                                <button type="button" class="px-3 py-2 rounded text-sm font-semibold mr-2 mb-1"
+                                                    :style="{ backgroundColor: colors.cta.value.hex(), color: previewCtaTextColor }">
+                                                    Deploy context
+                                                </button>
+                                                <span class="preview-mono-label px-2 py-1 rounded"
+                                                    :style="{ backgroundColor: previewBrandSurface, color: previewToneText(colors.brand.value) }"
+                                                    v-text="activeHarmonyMode.label"></span>
                                             </div>
-                                            <div class="flex mt-3 md:mt-0">
-                                                <button type="button" class="px-4 py-2 rounded-lg text-sm font-semibold mr-2"
-                                                    :style="{ backgroundColor: colors.cta.value.hex(), color: previewCtaTextColor }">Publish theme</button>
-                                                <button type="button" class="px-4 py-2 rounded-lg text-sm font-semibold"
-                                                    :style="{ color: previewToneText(colors.brand.value), backgroundColor: previewBrandSurface }">Share</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex flex-wrap -mx-2 mb-4">
+                                        <!-- Surface stack -->
+                                        <div class="w-full lg:w-1/2 px-2 mb-4">
+                                            <div class="rounded-lg p-4 h-full" :style="{ backgroundColor: previewCardBackground }">
+                                                <span class="preview-mono-label block mb-3" :style="{ color: previewMutedTextColor }">Surface stack</span>
+                                                <div v-for="(surface, sIndex) in previewSurfaces" :key="surface.label"
+                                                    class="flex items-center rounded p-3"
+                                                    :class="sIndex < previewSurfaces.length - 1 ? 'mb-2' : ''"
+                                                    :style="{ backgroundColor: previewSurfaceBackground(surface.level) }">
+                                                    <span class="preview-accent-rail mr-3 self-auto h-8"
+                                                        :style="{ backgroundColor: previewToneSurfaceMid(colors.brand.value) }"></span>
+                                                    <div>
+                                                        <div class="text-sm font-semibold" :style="{ color: previewHeadingColor }" v-text="surface.label"></div>
+                                                        <div class="text-xs" :style="{ color: previewMutedTextColor }" v-text="surface.desc"></div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 
+                                        <!-- Token drift -->
+                                        <div class="w-full lg:w-1/2 px-2 mb-4">
+                                            <div class="rounded-lg p-4 h-full" :style="{ backgroundColor: previewCardBackground }">
+                                                <div class="flex items-center justify-between mb-3">
+                                                    <span class="preview-mono-label" :style="{ color: previewMutedTextColor }">Token drift</span>
+                                                    <span class="text-xs font-semibold" :style="{ color: previewToneText(colors.info.value) }">stable</span>
+                                                </div>
+                                                <div class="flex items-end h-20 px-1 rounded p-2 mb-3" :style="{ backgroundColor: previewBrandSurface }">
+                                                    <div v-for="(height, index) in previewSignalBars" :key="index"
+                                                        class="flex-1 mx-1 rounded-sm"
+                                                        :style="{
+                                                            height: height + '%',
+                                                            backgroundColor: index === 4
+                                                                ? colors.brand.value.hex()
+                                                                : previewToneSurfaceMid(colors.info.value),
+                                                        }"></div>
+                                                </div>
+                                                <p class="text-xs leading-normal" :style="{ color: previewTextColor }">
+                                                    Semantic hues hold range while brand influence shifts saturation.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Intent map -->
+                                    <div class="rounded-lg p-4 mb-4" :style="{ backgroundColor: previewCardBackground }">
+                                        <span class="preview-mono-label block mb-3" :style="{ color: previewMutedTextColor }">Intent map</span>
                                         <div class="flex flex-wrap -mx-1">
-                                            <div v-for="metric in previewMetrics" :key="metric.label" class="w-1/2 lg:w-1/4 px-1 mb-2">
-                                                <div class="rounded-lg p-3 h-full" :style="{ backgroundColor: previewBrandSurface }">
-                                                    <div class="flex items-center justify-between mb-2">
-                                                        <span class="w-8 h-8 rounded-lg inline-flex items-center justify-center"
-                                                            :style="{ backgroundColor: previewCardBackground, color: previewToneMuted(colors.info.value) }">
-                                                            <i class="fas text-xs" :class="metric.icon"></i>
-                                                        </span>
-                                                        <span class="text-xs font-semibold" :style="{ color: previewToneText(colors.success.value) }" v-text="metric.meta"></span>
+                                            <div v-for="intent in previewIntents" :key="intent.role" class="w-full md:w-1/2 px-1 mb-2">
+                                                <div class="flex rounded p-2" :style="{ backgroundColor: previewToneSurface(previewIntentColor(intent.role)) }">
+                                                    <span class="preview-accent-rail mr-2 self-auto"
+                                                        :style="{ backgroundColor: previewIntentColor(intent.role).hex() }"></span>
+                                                    <div class="min-w-0">
+                                                        <div class="text-xs font-semibold truncate" :style="{ color: previewToneText(previewIntentColor(intent.role)) }" v-text="intent.label"></div>
+                                                        <div class="text-xs truncate" :style="{ color: previewMutedTextColor }" v-text="intent.detail"></div>
                                                     </div>
-                                                    <div class="text-xl font-bold" :style="{ color: previewHeadingColor }" v-text="metric.value"></div>
-                                                    <div class="text-xs mt-1" :style="{ color: previewMutedTextColor }" v-text="metric.label"></div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
+                                    <!-- Live fragments + semantic swatches -->
                                     <div class="flex flex-wrap -mx-2">
-                                        <div class="w-full lg:w-2/3 px-2 mb-4">
-                                            <div class="rounded-lg p-4 md:p-5 h-full" :style="{ backgroundColor: previewCardBackground }">
-                                                <div class="flex items-center justify-between mb-4">
-                                                    <div>
-                                                        <h4 class="font-bold" :style="{ color: previewHeadingColor }">Token usage</h4>
-                                                        <p class="text-xs" :style="{ color: previewMutedTextColor }">Tint ramps in charts, base tones for emphasis only</p>
+                                        <div class="w-full lg:w-3/5 px-2 mb-4">
+                                            <div class="rounded-lg p-4 h-full" :style="{ backgroundColor: previewCardBackground }">
+                                                <span class="preview-mono-label block mb-3" :style="{ color: previewMutedTextColor }">Interface fragments</span>
+
+                                                <div v-for="(fragment, index) in previewFragments" :key="index" class="mb-3">
+                                                    <div v-if="fragment.type === 'command'"
+                                                        class="flex items-center rounded px-3 py-2"
+                                                        :style="{ backgroundColor: previewBrandSurface }">
+                                                        <i class="fas text-xs mr-2" :class="fragment.icon" :style="{ color: previewToneMuted(colors.brand.value) }"></i>
+                                                        <span class="text-xs truncate" :style="{ color: previewTextColor }" v-text="fragment.text"></span>
+                                                        <span class="ml-auto preview-mono-label" :style="{ color: previewMutedTextColor }">⌘K</span>
                                                     </div>
-                                                    <span class="text-xs px-2 py-1 rounded-full font-semibold"
-                                                        :style="{ backgroundColor: previewBrandSurfaceMid, color: previewToneText(colors.brand.value) }">7 days</span>
-                                                </div>
-                                                <div class="flex items-end h-32 px-1 rounded-lg p-2" :style="{ backgroundColor: previewBrandSurface }">
-                                                    <div v-for="(height, index) in previewChartBars" :key="index"
-                                                        class="flex-1 mx-1 rounded-t-lg"
-                                                        :style="{
-                                                            height: height + '%',
-                                                            backgroundColor: index === 3
-                                                                ? colors.brand.value.hex()
-                                                                : (index % 3 === 0
-                                                                    ? previewToneSurfaceMid(colors.brand.value)
-                                                                    : (index % 3 === 1
-                                                                        ? previewToneSurfaceMid(colors.info.value)
-                                                                        : previewToneSurfaceMid(colors.cta.value))),
-                                                        }"></div>
+
+                                                    <div v-if="fragment.type === 'signal'"
+                                                        class="flex items-start rounded px-3 py-2"
+                                                        :style="{ backgroundColor: previewToneSurfaceMid(colors[fragment.tone].value) }">
+                                                        <span class="preview-dot-sm rounded-full mt-1 mr-2" :style="{ backgroundColor: colors[fragment.tone].value.hex() }"></span>
+                                                        <span class="text-xs" :style="{ color: previewToneText(colors[fragment.tone].value) }" v-text="fragment.text"></span>
+                                                    </div>
+
+                                                    <div v-if="fragment.type === 'thread'"
+                                                        class="flex rounded px-3 py-2"
+                                                        :style="{ backgroundColor: previewBodyBackground }">
+                                                        <span class="preview-accent-rail mr-2 self-auto"
+                                                            :style="{ backgroundColor: previewIntentColor(fragment.tone).hex() }"></span>
+                                                        <div>
+                                                            <div class="flex items-center">
+                                                                <span class="text-xs font-semibold mr-2" :style="{ color: previewHeadingColor }" v-text="fragment.title"></span>
+                                                                <span class="preview-mono-label" :style="{ color: previewMutedTextColor }" v-text="fragment.meta"></span>
+                                                            </div>
+                                                            <p class="text-xs mt-1" :style="{ color: previewTextColor }" v-text="fragment.body"></p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="w-full lg:w-1/3 px-2 mb-4">
-                                            <div class="rounded-lg p-4 md:p-5 h-full" :style="{ backgroundColor: previewCardBackground }">
-                                                <h4 class="font-bold mb-3" :style="{ color: previewHeadingColor }">Semantic set</h4>
-                                                <div class="flex flex-wrap mb-4">
-                                                    <div v-for="(color, id) in colors" :key="id" class="mr-2 mb-2">
+                                        <div class="w-full lg:w-2/5 px-2 mb-4">
+                                            <div class="rounded-lg p-4 h-full" :style="{ backgroundColor: previewCardBackground }">
+                                                <span class="preview-mono-label block mb-3" :style="{ color: previewMutedTextColor }">Token ramp</span>
+                                                <div class="flex flex-wrap">
+                                                    <div v-for="(color, id) in colors" :key="id" class="mr-2 mb-3">
                                                         <div class="text-xs mb-1 truncate w-10" :style="{ color: previewMutedTextColor }" v-text="color.name"></div>
                                                         <div class="flex flex-col swatch-stack-sm w-10 rounded overflow-hidden">
                                                             <span class="swatch-band" :style="{ backgroundColor: tint(color.value, tintOneShift).hex() }"></span>
@@ -292,64 +343,6 @@
                                                             <span class="swatch-band" :style="{ backgroundColor: shade(color.value, shadeTwoShift).hex() }"></span>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="rounded-lg p-3 text-sm"
-                                                    :style="{ backgroundColor: previewInfoAlertBackground, color: previewToneText(colors.info.value) }">
-                                                    <i class="fas fa-lightbulb mr-2" :style="{ color: previewToneMuted(colors.info.value) }"></i>
-                                                    Harmony rules pick the CTA; status hues stay in familiar UI ranges.
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex flex-wrap -mx-2 mb-4">
-                                        <div v-for="feature in previewFeatures" :key="feature.title" class="w-full md:w-1/3 px-2 mb-4">
-                                            <div class="rounded-lg p-4 h-full" :style="{ backgroundColor: previewCardBackground }">
-                                                <span class="w-8 h-8 rounded-lg inline-flex items-center justify-center mb-3"
-                                                    :style="{ backgroundColor: previewBrandSurface, color: previewToneText(colors.brand.value) }">
-                                                    <i class="fas" :class="feature.icon"></i>
-                                                </span>
-                                                <h4 class="font-bold text-sm mb-1" :style="{ color: previewHeadingColor }" v-text="feature.title"></h4>
-                                                <p class="text-xs leading-normal" :style="{ color: previewMutedTextColor }" v-text="feature.description"></p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex flex-wrap -mx-2">
-                                        <div class="w-full lg:w-1/2 px-2 mb-4">
-                                            <div class="rounded-lg p-4" :style="{ backgroundColor: previewCardBackground }">
-                                                <h4 class="font-bold mb-3" :style="{ color: previewHeadingColor }">Recent activity</h4>
-                                                <div v-for="(item, index) in previewActivity" :key="item.title"
-                                                    class="flex"
-                                                    :class="index < previewActivity.length - 1 ? 'mb-3' : ''">
-                                                    <span class="w-2 h-2 rounded-full mt-2 mr-3 flex-none"
-                                                        :style="{ backgroundColor: previewStatusColor(item.tone) }"></span>
-                                                    <div>
-                                                        <div class="flex flex-wrap items-center">
-                                                            <span class="font-semibold text-sm mr-2" :style="{ color: previewHeadingColor }" v-text="item.title"></span>
-                                                            <span class="text-xs" :style="{ color: previewMutedTextColor }" v-text="item.time"></span>
-                                                        </div>
-                                                        <p class="text-xs mt-1" :style="{ color: previewTextColor }" v-text="item.detail"></p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="w-full lg:w-1/2 px-2 mb-4">
-                                            <div class="rounded-lg p-4 overflow-hidden" :style="{ backgroundColor: previewCardBackground }">
-                                                <h4 class="font-bold mb-3" :style="{ color: previewHeadingColor }">Rollout queue</h4>
-                                                <div class="text-xs uppercase tracking-wide mb-2 opacity-75"
-                                                    :style="{ color: previewMutedTextColor }">Project · Environment · Status</div>
-                                                <div v-for="row in previewDeployments" :key="row.name"
-                                                    class="flex items-center justify-between py-2 border-t"
-                                                    :style="{ borderColor: previewDividerColor }">
-                                                    <div>
-                                                        <div class="font-semibold text-sm" :style="{ color: previewHeadingColor }" v-text="row.name"></div>
-                                                        <div class="text-xs" :style="{ color: previewMutedTextColor }" v-text="row.env"></div>
-                                                    </div>
-                                                    <span class="px-2 py-1 rounded-full text-xs font-semibold"
-                                                        :style="previewDeploymentBadgeStyle(row.status)"
-                                                        v-text="row.progress"></span>
                                                 </div>
                                             </div>
                                         </div>

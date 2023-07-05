@@ -43,28 +43,30 @@ new Vue({
             { id: 'sass', title: 'SASS' },
             { id: 'scss', title: 'SCSS' },
         ],
-        previewFeatures: [
-            { icon: 'fa-magic', title: 'Semantic harmony', description: 'Status colors stay in recognizable UI ranges with subtle theme influence.' },
-            { icon: 'fa-chart-line', title: 'Readable data viz', description: 'Charts and metrics stay legible in light and dark surfaces.' },
-            { icon: 'fa-shield-alt', title: 'Accessible pairs', description: 'Text, borders, and fills are tuned for everyday UI density.' },
+        previewSurfaces: [
+            { label: 'Ambient', desc: 'Full-bleed background', level: 0 },
+            { label: 'Raised', desc: 'Panels and sheets', level: 1 },
+            { label: 'Focused', desc: 'Modals and command', level: 2 },
         ],
-        previewMetrics: [
-            { label: 'Contrast score', value: '94', meta: '+6 this week', positive: true, icon: 'fa-universal-access' },
-            { label: 'Active tokens', value: '128', meta: 'All formats', positive: true, icon: 'fa-layer-group' },
-            { label: 'Gray ramp', value: '10', meta: 'Brand-tinted', positive: true, icon: 'fa-adjust' },
-            { label: 'Preview modes', value: '2', meta: 'Light & dark', positive: true, icon: 'fa-moon' },
+        previewIntents: [
+            { role: 'brand', label: 'Navigation anchor', detail: 'Identity + wayfinding chrome' },
+            { role: 'cta', label: 'Commit action', detail: 'Primary forward motion' },
+            { role: 'info', label: 'System signal', detail: 'Neutral contextual feedback' },
+            { role: 'success', label: 'Confirmed state', detail: 'Completed hand-offs' },
+            { role: 'warning', label: 'Caution state', detail: 'Recoverable friction' },
+            { role: 'danger', label: 'Critical state', detail: 'Blocking interruption' },
         ],
-        previewActivity: [
-            { time: 'Just now', title: 'Brand base updated', detail: 'Primary swatch recalculated across semantic colors.', tone: 'brand' },
-            { time: '4m ago', title: 'Gray ramp shifted', detail: 'Neutral surfaces picked up a subtle brand cast.', tone: 'info' },
-            { time: '12m ago', title: 'Export ready', detail: 'Tailwind, SASS, and SCSS outputs are in sync.', tone: 'success' },
+        previewContexts: [
+            { name: 'Spatial shell', status: 'Live', tone: 'brand' },
+            { name: 'Agent panel', status: 'Linked', tone: 'info' },
+            { name: 'Wearable', status: 'Queued', tone: 'warning' },
         ],
-        previewDeployments: [
-            { name: 'Marketing site', env: 'Production', status: 'success', progress: '100%' },
-            { name: 'Design system', env: 'Staging', status: 'warning', progress: '68%' },
-            { name: 'Mobile app', env: 'Review', status: 'brand', progress: 'Draft' },
+        previewFragments: [
+            { type: 'command', text: 'Remap success tone +4% saturation…', icon: 'fa-terminal' },
+            { type: 'signal', text: 'Token graph synced across 3 contexts.', tone: 'success' },
+            { type: 'thread', title: 'Surface refresh', body: 'Ambient layer luminance nudged.', meta: 'now', tone: 'brand' },
         ],
-        previewChartBars: [42, 68, 55, 84, 61, 92, 74],
+        previewSignalBars: [28, 44, 36, 52, 40, 48, 38, 46, 34],
     },
 
     watch: {
@@ -76,8 +78,14 @@ new Vue({
     computed: {
         inputClass() {
             return this.isDarkMode
-                ? 'bg-gray-800 border border-gray-600'
-                : 'bg-white border border-gray-300';
+                ? 'input-surface input-surface-dark bg-gray-800 text-gray-100'
+                : 'input-surface bg-white text-gray-800';
+        },
+
+        controlSurfaceClass() {
+            return this.isDarkMode
+                ? 'bg-gray-800 text-gray-100'
+                : 'bg-white text-gray-800';
         },
 
         brand() {
@@ -159,22 +167,12 @@ new Vue({
                 : this.grays['gray-lighter'].value.hex();
         },
 
-        previewChromeBackground() {
-            return this.isDarkMode
-                ? this.grays.black.value.hex()
-                : this.grays['gray-lighter'].value.hex();
-        },
-
         previewBrandSurface() {
             return this.tint(this.brand, this.tintOneShift).hex();
         },
 
         previewBrandSurfaceMid() {
             return this.tint(this.brand, this.tintTwoShift).hex();
-        },
-
-        previewInfoAlertBackground() {
-            return this.tint(this.colors.info.value, this.tintOneShift).hex();
         },
 
         previewCtaTextColor() {
@@ -450,18 +448,6 @@ new Vue({
             localStorage.setItem('isDarkMode', this.isDarkMode);
         },
 
-        previewStatusColor(status) {
-            const colors = {
-                success: this.colors.success.value,
-                warning: this.colors.warning.value,
-                danger: this.colors.danger.value,
-                brand: this.colors.brand.value,
-                info: this.colors.info.value,
-            };
-
-            return colors[status] ? colors[status].hex() : this.colors.info.value.hex();
-        },
-
         previewToneSurface(color) {
             const value = typeof color === 'string' ? chroma(color) : color;
 
@@ -486,11 +472,31 @@ new Vue({
             return this.shade(value, this.shadeTwoShift).hex();
         },
 
-        previewDeploymentBadgeStyle(status) {
-            const color = this.previewStatusColor(status);
+        previewIntentColor(role) {
+            if (this.colors[role]) {
+                return this.colors[role].value;
+            }
+
+            return this.colors.brand.value;
+        },
+
+        previewSurfaceBackground(level) {
+            if (level === 0) {
+                return this.previewBodyBackground;
+            }
+
+            if (level === 1) {
+                return this.previewCardBackground;
+            }
+
+            return this.previewBrandSurface;
+        },
+
+        previewContextPillStyle(tone) {
+            const color = this.previewIntentColor(tone);
 
             return {
-                backgroundColor: this.previewToneSurfaceMid(color),
+                backgroundColor: this.previewToneSurface(color),
                 color: this.previewToneText(color),
             };
         },
