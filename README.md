@@ -61,4 +61,4 @@ Tabs share the same shift values. At least they should — if SASS/SCSS looks wr
 
 ## Contributing
 
-Originally forked from [@adevade](https://twitter.com/adevade).
+Originally forked from [@adevade](https://github.com/adevade/color-scheme-generator).
